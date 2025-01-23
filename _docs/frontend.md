@@ -7,9 +7,11 @@ A single-page application (SPA) built with React. It communicates with the Bun s
 ## Core UI Components
 
 ### 1. Login / Auth (optional)
+
 - If authentication is needed, a login page. Otherwise skip if internal only.
 
 ### 2. Tasks List
+
 - Table or cards displaying tasks (title, status, type, urgency, creation date)
 - AI Progress indicators showing:
   - Draft status
@@ -21,6 +23,7 @@ A single-page application (SPA) built with React. It communicates with the Bun s
   - By urgency (urgent, medium, low)
 
 ### 3. Task Detail / Message Thread
+
 - Clicking a task shows:
   - All messages associated with that client/task
   - AI-generated drafts and analysis
@@ -37,6 +40,7 @@ A single-page application (SPA) built with React. It communicates with the Bun s
   - Preview before sending
 
 ### 4. Document Management
+
 - Document list view with filters:
   - By task
   - By client
@@ -50,20 +54,24 @@ A single-page application (SPA) built with React. It communicates with the Bun s
   - Track document approvals and revisions
 
 ### 5. Activity Feed
+
 - A chronological list of events from the events table
 - For each event, show event_type, timestamp, and relevant details
 
 ### 6. Client Profile (Sidebar or separate page)
+
 - clients.summary displayed at the top, plus phone_number, name, etc.
 - Possibly an "Edit summary" button if you want to override or manually note something
 
 ## State Management
+
 - React Query or Redux can be used to handle server data
 - Caching: tasks, events, messages can be cached for quick reloading
 
 ## Typical Flows
 
 ### Human picks a Task
+
 1. The server returns the entire conversation or relevant events
 2. The human can respond with an outbound message, which calls POST /api/messages/send
 3. The UI automatically logs a new event in the feed

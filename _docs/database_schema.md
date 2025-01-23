@@ -3,6 +3,7 @@
 ## Core Tables
 
 ### clients
+
 ```sql
 CREATE TABLE clients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -11,20 +12,22 @@ CREATE TABLE clients (
     last_name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     phone TEXT,
-    services JSON NOT NULL,
+    services JSON NOT NULL,     -- ["STRATEGY", "DESIGN", "DEV", "CONSULT"]
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
 Notes:
+
 - `organization_name`: Company or organization the client represents
 - `first_name`, `last_name`: Primary contact person details
 - `email`: Unique business email for the client
 - `phone`: Contact phone number (optional)
-- `services`: JSON array of services the client is using (e.g., ["Development", "Design", "Product Strategy", "Consulting"])
+- `services`: JSON array of services the client is using (e.g., ["STRATEGY", "DESIGN", "DEV", "CONSULT"])
 - `created_at`: Timestamp when client was added
 
 ### messages
+
 ```sql
 CREATE TABLE messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,18 +42,21 @@ CREATE TABLE messages (
 ```
 
 Notes:
+
 - `direction`: Indicates if message is 'inbound' (from client) or 'outbound' (to client)
 - `task_id`: Optional link to associated task
 - Messages are always associated with a client via `client_id`
 
 ### tasks
+
 ```sql
 CREATE TABLE tasks (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     client_id INTEGER NOT NULL,
-    type TEXT NOT NULL, -- 'bug', 'feature_request', 'question', etc.
+    type TEXT NOT NULL, -- 'FEATURE_REQUEST', 'BUG', 'REVISION', 'RESEARCH', 'QUESTION'
+    service_category TEXT NOT NULL, -- 'STRATEGY', 'DESIGN', 'DEV', 'CONSULT'
     urgency TEXT NOT NULL, -- 'urgent', 'medium', 'low'
-    status TEXT NOT NULL, -- 'open', 'in_progress', 'closed'
+    status TEXT NOT NULL, -- 'open', 'blocked', 'in_progress', 'needs_review', 'needs_client_review', 'closed'
     title TEXT NOT NULL,
     description TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -58,15 +64,27 @@ CREATE TABLE tasks (
     FOREIGN KEY (client_id) REFERENCES clients(id),
     FOREIGN KEY (primary_document_id) REFERENCES documents(id)
 );
+
+-- New table for task dependencies
+CREATE TABLE task_dependencies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    dependent_task_id INTEGER NOT NULL,
+    required_task_id INTEGER NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (dependent_task_id) REFERENCES tasks(id),
+    FOREIGN KEY (required_task_id) REFERENCES tasks(id)
+);
 ```
 
 Notes:
+
 - `type`: Categorizes the task (e.g., 'bug', 'feature_request', 'question')
 - `urgency`: Priority level of the task
 - `status`: Current state of the task
 - `primary_document_id`: Optional link to main associated document (e.g., PRD for feature request)
 
 ### events
+
 ```sql
 CREATE TABLE events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -81,6 +99,7 @@ CREATE TABLE events (
 ```
 
 Notes:
+
 - `event_type`: Type of event (e.g., 'message_in', 'message_out', 'task_created', 'task_updated')
 - `details`: JSON field containing event-specific data
 - Events can be associated with a task, client, or both
@@ -88,6 +107,7 @@ Notes:
 ## Document Management Tables
 
 ### documents
+
 ```sql
 CREATE TABLE documents (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -107,6 +127,7 @@ CREATE TABLE documents (
 ```
 
 ### document_versions
+
 ```sql
 CREATE TABLE document_versions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -122,11 +143,13 @@ CREATE TABLE document_versions (
 ## Indexes
 
 ### Core Table Indexes
+
 - `idx_messages_client_task` on messages(client_id, task_id)
 - `idx_tasks_client_type_status` on tasks(client_id, type, status)
 - `idx_events_task_client_type` on events(task_id, client_id, event_type)
 
 ### Document Table Indexes
+
 - documents(task_id, client_id)
 - documents(s3_key)
 - document_versions(document_id)
@@ -134,11 +157,13 @@ CREATE TABLE document_versions (
 ## Foreign Key Relationships
 
 ### Core Relationships
+
 - messages → tasks, clients
 - tasks → clients
 - events → tasks, clients
 
 ### Document Relationships
+
 - documents → tasks, clients, events
 - document_versions → documents
 - tasks.primary_document_id → documents

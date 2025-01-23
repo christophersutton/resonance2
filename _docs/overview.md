@@ -7,6 +7,7 @@ The goal is to build an LLM-powered CRM workflow that receives inbound client re
 ## Services Offered
 
 We provide four main service categories to clients:
+
 - **Development**: Software development and implementation
 - **Design**: UI/UX and product design
 - **Product Strategy**: Product planning and roadmap development
@@ -41,10 +42,10 @@ We provide four main service categories to clients:
 
 ## Core Technologies
 
-- **Backend**: 
+- **Backend**:
   - Bun (runtime & server)
   - SQLite (database)
-- **Communication**: 
+- **Communication**:
   - Twilio (SMS in/out)
 - **AI/ML**:
   - LLM (classification, drafting, analysis)

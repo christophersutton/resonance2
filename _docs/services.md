@@ -1,65 +1,53 @@
 # Services
 
-The "services" layer handles business logic: classification, scheduling, task processing, etc. Each service is typically a function or class (depending on style).
+Below is an overview of the key services in our application and how they relate to the current task flows and database schema.
 
 ## Classification Service
 
-- **Function**: `classifyMessage(messageBody: string) => { type: string, urgency: string }`
-- **Flow**:
-  1. Takes the raw text from the inbound message
-  2. Invokes LLM endpoint
-  3. Returns an object with:
-     - type: 'bug', 'feature_request', 'question', etc.
-     - urgency: 'urgent', 'medium', 'low'
-  4. This classification guides task creation and routing
-
-## Task Processing Service
-
-- **Function**: `processTask(taskId: number) => void`
-- **Flow**:
-  1. Takes classification results and creates/updates tasks
-  2. Triggers appropriate workflow based on task type:
-     - Feature Request: PRD generation → Review → GitHub
-     - Bug Report: Context gathering → GitHub Issue
-     - Question: AI draft or human routing
-  3. Maintains state of both AI and human activities
-  4. Logs events for all state changes
+- **Purpose**: Processes inbound messages and classifies them into defined task types (e.g., Feature Request, Bug Report, Question, Research).
+- **Flow**:  
+  1. Receives new inbound messages from the webhook/event pipeline.  
+  2. Uses the updated classification approach to assign the correct category/type to each task.  
+  3. Inserts or updates the corresponding record in the database (referencing the `tasks` table) with the identified category and initial status.  
+- **Considerations**:  
+  - Must handle edge cases (uncertain classification, incomplete metadata).  
+  - May invoke confidence checks or fallback logic.  
 
 ## AI Worker Service
 
-- **Function**: `handleAIProcessing(taskId: number) => void`
-- **Purpose**: Support and augment human responses with AI-powered analysis and content
-- **Flow**:
-  1. Retrieves the relevant task and associated messages
-  2. Performs cognitive tasks based on type:
-     - Feature requests: Generates PRD drafts, analyzes requirements
-     - Bug reports: Triages, gathers context, suggests solutions
-     - General inquiries: Prepares response drafts, finds relevant documentation
-  3. Creates necessary documents and messages
-  4. Logs appropriate events
-  5. Updates dashboard for human review
+- **Purpose**: Manages advanced logic and text processing once the task type is confirmed by the Classification Service.  
+- **Flow**:  
+  1. Listens for new or updated tasks in the "ready for AI" status.  
+  2. Performs the relevant AI operations (e.g., summarizing user requests, refining bug reproduction steps, drafting responses) based on task type.  
+  3. Updates task details in the database, optionally transitioning the task status from "AI Review" to "Human Review" or finalization.  
+- **Considerations**:  
+  - Error handling should be consistent with the new events-based approach, ensuring retries or fallback if an AI task fails.  
+  - Incorporate concurrency safeguards and timeouts for large volumes of tasks.  
 
 ## GitHub Integration Service
 
-- **Function**: `createGitHubIssue(taskId: number) => string`
-- **Purpose**: Create and manage GitHub issues for development tasks
-- **Flow**:
-  1. Retrieves task details and related documents
-  2. Formats issue content based on task type:
-     - Feature requests: Convert PRD to issue format
-     - Bug reports: Format with reproduction steps
-  3. Creates issue in appropriate repository
-  4. Stores issue URL in task details
-  5. Logs github_issue_created event
+- **Purpose**: Creates or updates GitHub issues for tasks classified as code-related (e.g., Feature Requests, Bug Reports).  
+- **Flow**:  
+  1. Subscribes to task events indicating a new or reclassified code-related task.  
+  2. Creates a GitHub issue (or updates existing issues) with relevant details, such as steps to reproduce for bugs or acceptance criteria for feature requests.  
+  3. Tracks and synchronizes status changes in both systems (task closed on GitHub → updates "tasks" table, for example).  
+- **Considerations**:  
+  - Must handle GitHub API rate limits and authentication.  
+  - Ensures that status changes are propagated accurately (e.g., linking GitHub issue closure to the corresponding local task status).  
 
-## Event Logging Service
+## Other Supporting Services
 
-- **Purpose**: Provide a single interface to log all system actions
-- **Function**: `logEvent(eventType: string, details: object) => number`
-- **Event Types**:
-  - Message events: message_in, message_out
-  - Task events: task_created, task_updated
-  - Client events: client_created, client_updated
-  - GitHub events: github_issue_created
-  - Document events: document_created, document_updated
-- See events.md for detailed event structures
+- **Document Management**  
+  - Manages file attachments associated with tasks, ensuring consistent references in the `documents` table.  
+- **Notification/Alert Service**  
+  - Monitors critical system events and escalates (e.g., errors during AI processing, repeated classification failures).  
+
+## Concurrency and Event Handling
+
+- Services communicate primarily through event subscriptions (see `events.md`).  
+- Each service is designed to handle concurrent tasks and process them in FIFO or priority-based order as needed.  
+- Retry logic, dead-letter queues, and error-catching best practices are recommended to ensure resilient task handling.
+
+---
+
+This updated structure aligns with the latest task definitions ("core_flows.md" and "database_schema.md") and clarifies how each service interacts with the new classification approach. Make sure to keep the references to task lifecycle status states and event triggers up to date as new features or flows are added.

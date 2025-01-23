@@ -26,6 +26,7 @@ This document describes the main workflows in the system, particularly how messa
 ## Task Type-Specific Flows
 
 ### Feature Request Flow
+
 1. **Initial Request**
    - Message classified as 'feature_request'
    - New task created with type='feature_request'
@@ -45,6 +46,7 @@ This document describes the main workflows in the system, particularly how messa
    - Issue link stored in task or event details
 
 ### Bug Report Flow
+
 1. **Initial Report**
    - Message classified as 'bug'
    - New task created with type='bug'
@@ -62,6 +64,7 @@ This document describes the main workflows in the system, particularly how messa
    - Links issue in task details
 
 ### General Question Flow
+
 1. **Question Reception**
    - Message classified as 'question'
    - Urgency determined
