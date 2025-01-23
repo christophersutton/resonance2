@@ -11,7 +11,9 @@ export function clientRoutes(clientRepo: ClientRepository) {
             const clients = await clientRepo.findAll();
             return c.json(clients);
         } catch (error) {
-            console.error("Error fetching clients:", error);
+            if (process.env.NODE_ENV !== 'test') {
+                console.error("Error fetching clients:", error);
+            }
             return c.json({ error: "Failed to fetch clients" }, 500);
         }
     });
@@ -35,7 +37,9 @@ export function clientRoutes(clientRepo: ClientRepository) {
             const client = await clientRepo.create(body);
             return c.json(client, 201);
         } catch (error) {
-            console.error("Error creating client:", error);
+            if (process.env.NODE_ENV !== 'test') {
+                console.error("Error creating client:", error);
+            }
             return c.json({ error: "Failed to create client" }, 500);
         }
     });
