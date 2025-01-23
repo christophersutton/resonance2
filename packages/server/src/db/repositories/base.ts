@@ -1,13 +1,24 @@
 import { Database, Statement } from "bun:sqlite";
 import type { SQLQueryBindings } from "bun:sqlite";
 
-export abstract class BaseRepository<TRow, TEntity> {
+// Base type for all database rows
+export interface BaseRow {
+    id: bigint;
+    created_at: string;
+}
+
+// Base type for all entities
+export interface BaseEntity {
+    id: number;
+    createdAt: string;
+}
+
+export abstract class BaseRepository<TRow extends BaseRow, TEntity extends BaseEntity> {
     constructor(
         protected readonly db: Database,
         protected readonly tableName: string
     ) {}
 
-    protected abstract mapToEntity(row: TRow): TEntity;
     protected abstract mapFromEntity(entity: Omit<TEntity, 'id' | 'createdAt'>): Partial<TRow>;
     protected abstract get rowType(): new () => TRow;
 
@@ -27,27 +38,29 @@ export abstract class BaseRepository<TRow, TEntity> {
         const rows = await this.db.query(`SELECT * FROM ${this.tableName}`)
             .as(this.rowType)
             .all() as TRow[];
-        
+
         return rows.map(row => this.mapToEntity(row));
     }
 
     async create(entity: Omit<TEntity, 'id' | 'createdAt'>): Promise<TEntity> {
         const data = this.mapFromEntity(entity);
-        const columns = Object.keys(data);
+        const keys = Object.keys(data);
+        const placeholders = keys.map(() => '?').join(', ');
         const values = Object.values(data) as SQLQueryBindings[];
-        const placeholders = new Array(values.length).fill('?').join(', ');
 
-        const result = await this.db.query(
-            `INSERT INTO ${this.tableName} (${columns.join(', ')}) VALUES (${placeholders}) RETURNING *`
+        const row = await this.db.query(
+            `INSERT INTO ${this.tableName} (${keys.join(', ')}) 
+             VALUES (${placeholders}) 
+             RETURNING *`
         ).as(this.rowType).get(...values) as TRow;
 
-        return this.mapToEntity(result);
+        return this.mapToEntity(row);
     }
 
     async update(id: number, entity: Partial<Omit<TEntity, 'id' | 'createdAt'>>): Promise<TEntity | null> {
-        const data = this.mapFromEntity(entity as any);
-        const setClause = Object.entries(data)
-            .map(([key]) => `${key} = ?`)
+        const data = this.mapFromEntity(entity as Omit<TEntity, 'id' | 'createdAt'>);
+        const setClause = Object.keys(data)
+            .map(key => `${key} = ?`)
             .join(', ');
         const values = [...Object.values(data), id] as SQLQueryBindings[];
 
@@ -64,5 +77,14 @@ export abstract class BaseRepository<TRow, TEntity> {
         ).get(id);
         
         return !!result;
+    }
+
+    protected mapToEntity(row: TRow): TEntity {
+        const { id, created_at, ...rest } = row;
+        return {
+            id: Number(id),
+            createdAt: created_at,
+            ...rest
+        } as unknown as TEntity;
     }
 }

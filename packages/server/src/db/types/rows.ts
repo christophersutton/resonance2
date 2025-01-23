@@ -2,9 +2,10 @@ import type {
     MessageDirection, TaskType, ServiceCategory, 
     TaskUrgency, TaskStatus 
 } from '../../../../shared/src/types/enums';
+import type { BaseRow } from "../repositories/base";
 
-export class ClientRow {
-    id!: number;
+export class ClientRow implements BaseRow {
+    id!: bigint;
     organization_name!: string;
     first_name!: string;
     last_name!: string;
@@ -14,61 +15,64 @@ export class ClientRow {
     created_at!: string;
 }
 
-export class MessageRow {
-    id!: number;
-    client_id!: number;
-    task_id?: number;
+export class MessageRow implements BaseRow {
+    id!: bigint;
+    client_id!: bigint;
+    task_id?: bigint;
     direction!: MessageDirection;
     body!: string;
     sent_at!: string;
+    created_at!: string;
 }
 
-export class TaskRow {
-    id!: number;
-    client_id!: number;
-    type!: TaskType;
-    service_category!: ServiceCategory;
-    urgency!: TaskUrgency;
-    status!: TaskStatus;
+export class TaskRow implements BaseRow {
+    id!: bigint;
+    client_id!: bigint;
+    type!: string;
+    service_category!: string;
+    urgency!: string;
+    status!: string;
     title!: string;
     description?: string;
     created_at!: string;
 }
 
-export class TaskDependencyRow {
-    id!: number;
-    dependent_task_id!: number;
-    required_task_id!: number;
+export class TaskDependencyRow implements BaseRow {
+    id!: bigint;
+    dependent_task_id!: bigint;
+    required_task_id!: bigint;
     created_at!: string;
 }
 
-export class EventRow {
-    id!: number;
-    task_id?: number;
-    client_id?: number;
+export class EventRow implements BaseRow {
+    id!: bigint;
+    task_id?: bigint;
+    client_id?: bigint;
     event_type!: string;
     details?: string; // JSON string in DB
     created_at!: string;
 }
 
-export class DocumentRow {
-    id!: number;
-    task_id?: number;
-    client_id?: number;
-    event_id?: number;
+export class DocumentRow implements BaseRow {
+    id!: bigint;
+    task_id?: bigint;
+    client_id?: bigint;
+    event_id?: bigint;
     file_name!: string;
     file_type!: string;
     s3_key!: string;
-    uploaded_by_user_id?: number;
+    uploaded_by_user_id?: bigint;
     uploaded_at!: string;
     description?: string;
+    created_at!: string;
 }
 
-export class DocumentVersionRow {
-    id!: number;
-    document_id!: number;
+export class DocumentVersionRow implements BaseRow {
+    id!: bigint;
+    document_id!: bigint;
     version_number!: number;
     s3_key!: string;
     uploaded_at!: string;
     description?: string;
+    created_at!: string;
 }

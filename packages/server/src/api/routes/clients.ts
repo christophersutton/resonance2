@@ -26,15 +26,14 @@ export function clientRoutes(clientRepo: ClientRepository) {
             const missingFields = requiredFields.filter(field => !(field in body));
             
             if (missingFields.length > 0) {
-                return c.json({ 
-                    error: "Missing required fields", 
-                    fields: missingFields 
+                return c.json({
+                    error: "Missing required fields",
+                    missingFields: missingFields
                 }, 400);
             }
-
-            // Create client
-            const newClient = await clientRepo.create(body);
-            return c.json(newClient, 201);
+            
+            const client = await clientRepo.create(body);
+            return c.json(client, 201);
         } catch (error) {
             console.error("Error creating client:", error);
             return c.json({ error: "Failed to create client" }, 500);

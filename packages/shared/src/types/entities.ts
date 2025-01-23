@@ -2,8 +2,9 @@ import type {
     MessageDirection, TaskType, ServiceCategory, 
     TaskUrgency, TaskStatus, ClientService 
 } from './enums';
+import type { BaseEntity } from '../../../server/src/db/repositories/base';
 
-export interface Client {
+export interface Client extends BaseEntity {
     id: number;
     organizationName: string;
     firstName: string;
@@ -23,7 +24,7 @@ export interface Message {
     sentAt: string; // ISO datetime string
 }
 
-export interface Task {
+export interface Task extends BaseEntity {
     id: number;
     clientId: number;
     type: TaskType;
@@ -42,7 +43,7 @@ export interface TaskDependency {
     createdAt: string; // ISO datetime string
 }
 
-export interface Event {
+export interface Event extends BaseEntity {
     id: number;
     taskId?: number;
     clientId?: number;
@@ -51,7 +52,7 @@ export interface Event {
     createdAt: string; // ISO datetime string
 }
 
-export interface Document {
+export interface Document extends BaseEntity {
     id: number;
     taskId?: number;
     clientId?: number;

@@ -14,8 +14,9 @@ export class ClientRepository extends BaseRepository<ClientRow, Client> {
     }
 
     protected mapToEntity(row: ClientRow): Client {
+        const id = typeof row.id === 'bigint' ? Number(row.id) : row.id;
         return {
-            id: row.id,
+            id,
             organizationName: row.organization_name,
             firstName: row.first_name,
             lastName: row.last_name,

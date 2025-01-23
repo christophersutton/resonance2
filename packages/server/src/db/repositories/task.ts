@@ -15,8 +15,8 @@ export class TaskRepository extends BaseRepository<TaskRow, Task> {
 
     protected mapToEntity(row: TaskRow): Task {
         return {
-            id: row.id,
-            clientId: row.client_id,
+            id: Number(row.id),
+            clientId: Number(row.client_id),
             type: row.type as TaskType,
             serviceCategory: row.service_category as ServiceCategory,
             urgency: row.urgency as TaskUrgency,
@@ -29,7 +29,7 @@ export class TaskRepository extends BaseRepository<TaskRow, Task> {
 
     protected mapFromEntity(entity: Omit<Task, 'id' | 'createdAt'>): Partial<TaskRow> {
         return {
-            client_id: entity.clientId,
+            client_id: BigInt(entity.clientId),
             type: entity.type,
             service_category: entity.serviceCategory,
             urgency: entity.urgency,
