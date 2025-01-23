@@ -10,7 +10,8 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "turbo": "^1.11.3",

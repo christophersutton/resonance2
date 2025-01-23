@@ -1,0 +1,60 @@
+2025-01-23T21:57:14.755509Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf(".turbo/cookies/1.cookie"), AnchoredSystemPathBuf(".turbo/cookies/.turbo-cookie")}
+2025-01-23T21:57:14.755520Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Root, path: AnchoredSystemPathBuf("") }}))
+2025-01-23T21:57:53.356602Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/types/rows.ts")}
+2025-01-23T21:57:53.356611Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T21:58:02.156299Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/shared/src/types/entities.ts")}
+2025-01-23T21:58:02.156309Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/shared"), path: AnchoredSystemPathBuf("packages/shared") }}))
+2025-01-23T21:58:10.356314Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/repositories/client.ts")}
+2025-01-23T21:58:10.356324Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T21:58:28.756850Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/repositories/base.ts")}
+2025-01-23T21:58:28.756860Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T21:59:31.957517Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/repositories/base.ts")}
+2025-01-23T21:59:31.957542Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:00:11.556747Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/TaskRepository.ts")}
+2025-01-23T22:00:11.556757Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:01:27.364973Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/TaskRepository.ts")}
+2025-01-23T22:01:27.365007Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:01:45.352729Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/repositories/base.ts")}
+2025-01-23T22:01:45.352764Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:03:12.053065Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/repositories/base.ts")}
+2025-01-23T22:03:12.053094Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:03:38.053828Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/repositories/__tests__")}
+2025-01-23T22:03:38.053838Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:04:34.054335Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:04:34.054346Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:05:28.553697Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:05:28.553708Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:05:58.854925Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:05:58.854937Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:06:47.554022Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:06:47.554033Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:07:30.755297Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:07:30.755318Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:08:47.755800Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:08:47.755811Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:09:57.556073Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:09:57.556085Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:10:04.056745Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:10:04.056754Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:11:33.356639Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:11:33.356648Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:11:39.458614Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/BaseRepository.ts")}
+2025-01-23T22:11:39.458634Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:11:42.757163Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/TaskRepository.ts")}
+2025-01-23T22:11:42.757173Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:14:20.558116Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/shared/src/types/database.ts")}
+2025-01-23T22:14:20.558145Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/shared"), path: AnchoredSystemPathBuf("packages/shared") }}))
+2025-01-23T22:16:45.332512Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("package.json")}
+2025-01-23T22:16:45.332534Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(All)
+2025-01-23T22:17:11.532981Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/types/rows.ts")}
+2025-01-23T22:17:11.532990Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:17:18.632931Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/types/rows.ts")}
+2025-01-23T22:17:18.632951Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:21:01.733806Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/repositories/task.ts")}
+2025-01-23T22:21:01.733839Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:21:24.233926Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/repositories/task.ts")}
+2025-01-23T22:21:24.233937Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:21:51.633638Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/seeds.ts")}
+2025-01-23T22:21:51.633647Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
+2025-01-23T22:22:04.333772Z  WARN turborepo_lib::package_changes_watcher: changed_files: {AnchoredSystemPathBuf("packages/server/src/db/seeds.ts")}
+2025-01-23T22:22:04.333782Z  WARN turborepo_lib::package_changes_watcher: changed_packages: Ok(Some({WorkspacePackage { name: Other("@resonance2/server"), path: AnchoredSystemPathBuf("packages/server") }}))
