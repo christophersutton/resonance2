@@ -1,10 +1,11 @@
-export type MessageDirection = 'INBOUND' | 'OUTBOUND';
+export type MessageDirection = 'inbound' | 'outbound';
 
-export type TaskType = 'GENERAL' | 'DOCUMENT_REVIEW' | 'MEETING';
-export type TaskUrgency = 'LOW' | 'MEDIUM' | 'HIGH';
-export type TaskStatus = 'NEW' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+export type TaskType = 'FEATURE_REQUEST' | 'BUG' | 'REVISION' | 'RESEARCH' | 'QUESTION';
+export type ServiceCategory = 'STRATEGY' | 'DESIGN' | 'DEV' | 'CONSULT';
+export type TaskUrgency = 'urgent' | 'medium' | 'low';
+export type TaskStatus = 'open' | 'blocked' | 'in_progress' | 'needs_review' | 'needs_client_review' | 'closed';
 
-export type ClientService = 'Development' | 'Design' | 'Product Strategy' | 'Consulting';
+export type ClientService = ServiceCategory;
 
 export interface Client {
     id: number;
@@ -30,12 +31,19 @@ export interface Task {
     id: number;
     clientId: number;
     type: TaskType;
+    serviceCategory: ServiceCategory;
     urgency: TaskUrgency;
     status: TaskStatus;
     title: string;
     description?: string;
     createdAt: string; // ISO datetime string
-    primaryDocumentId?: number;
+}
+
+export interface TaskDependency {
+    id: number;
+    dependentTaskId: number;
+    requiredTaskId: number;
+    createdAt: string; // ISO datetime string
 }
 
 export interface Event {
@@ -53,8 +61,8 @@ export interface Document {
     clientId?: number;
     eventId?: number;
     fileName: string;
-    fileType: string;
-    s3Key: string;
+    fileType: string; // e.g., 'application/pdf', 'image/png'
+    s3Key: string; // Unique identifier for the S3 object
     uploadedByUserId?: number;
     uploadedAt: string; // ISO datetime string
     description?: string;

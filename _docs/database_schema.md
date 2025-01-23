@@ -60,12 +60,10 @@ CREATE TABLE tasks (
     title TEXT NOT NULL,
     description TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    primary_document_id INTEGER,
-    FOREIGN KEY (client_id) REFERENCES clients(id),
-    FOREIGN KEY (primary_document_id) REFERENCES documents(id)
+    FOREIGN KEY (client_id) REFERENCES clients(id)
 );
 
--- New table for task dependencies
+-- Task dependencies table for tracking task relationships
 CREATE TABLE task_dependencies (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     dependent_task_id INTEGER NOT NULL,
@@ -79,9 +77,10 @@ CREATE TABLE task_dependencies (
 Notes:
 
 - `type`: Categorizes the task (e.g., 'bug', 'feature_request', 'question')
+- `service_category`: The service area this task belongs to
 - `urgency`: Priority level of the task
 - `status`: Current state of the task
-- `primary_document_id`: Optional link to main associated document (e.g., PRD for feature request)
+- Task dependencies allow tracking which tasks must be completed before others
 
 ### events
 
@@ -119,10 +118,7 @@ CREATE TABLE documents (
     s3_key TEXT NOT NULL UNIQUE, -- Unique identifier for the S3 object
     uploaded_by_user_id INTEGER,
     uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    description TEXT,
-    FOREIGN KEY (task_id) REFERENCES tasks(id),
-    FOREIGN KEY (client_id) REFERENCES clients(id),
-    FOREIGN KEY (event_id) REFERENCES events(id)
+    description TEXT
 );
 ```
 
@@ -131,12 +127,12 @@ CREATE TABLE documents (
 ```sql
 CREATE TABLE document_versions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    document_id INTEGER REFERENCES documents(id) ON DELETE CASCADE,
+    document_id INTEGER NOT NULL,
     version_number INTEGER NOT NULL,
     s3_key TEXT NOT NULL UNIQUE,
     uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     description TEXT,
-    FOREIGN KEY (document_id) REFERENCES documents(id)
+    FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE
 );
 ```
 
@@ -166,4 +162,3 @@ CREATE TABLE document_versions (
 
 - documents → tasks, clients, events
 - document_versions → documents
-- tasks.primary_document_id → documents
