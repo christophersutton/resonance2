@@ -6,6 +6,7 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SidebarProvider } from "./components/ui/sidebar";
 import { ClientProvider } from "./contexts/ClientContext";
+import { MessageProvider } from "./contexts/MessageContext";
 import { SplashScreen } from "./components/SplashScreen";
 import { MagicLinkCallback } from "./components/MagicLinkCallback";
 import Index from "./pages/Index";
@@ -17,18 +18,20 @@ const App = () => (
     <TooltipProvider>
       <SidebarProvider>
         <ClientProvider>
-          <Router>
-            <Routes>
-              {/* Public routes */}
-              <Route path="/" element={<SplashScreen />} />
-              <Route path="/auth/verify" element={<MagicLinkCallback />} />
+          <MessageProvider>
+            <Router>
+              <Routes>
+                {/* Public routes */}
+                <Route path="/" element={<SplashScreen />} />
+                <Route path="/auth/verify" element={<MagicLinkCallback />} />
 
-              {/* Protected routes */}
-              <Route path="/*" element={<Index />} />
-            </Routes>
-          </Router>
-          <Toaster />
-          <Sonner />
+                {/* Protected routes */}
+                <Route path="/*" element={<Index />} />
+              </Routes>
+            </Router>
+            <Toaster />
+            <Sonner />
+          </MessageProvider>
         </ClientProvider>
       </SidebarProvider>
     </TooltipProvider>

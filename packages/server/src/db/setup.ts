@@ -11,6 +11,8 @@ export interface DatabaseOptions {
     safeIntegers?: boolean;
     dbPath?: string;
     quiet?: boolean;
+    clean?: boolean;  // If true, drops and recreates all tables
+    seed?: boolean;   // If true, seeds the database with test data
 }
 
 // Tables in order of dependencies (dependent tables first)
@@ -78,68 +80,52 @@ async function verifySchema(db: Database, quiet?: boolean): Promise<void> {
  * Set up a new SQLite database with the required schema
  */
 export async function setupDatabase(options: DatabaseOptions = {}): Promise<Database> {
-    const dbPath = options.dbPath || config.dbPath;
-    const log = (message: string) => {
-        if (!options.quiet) {
-            console.log(message);
+    const {
+        readonly = false,
+        create = true,
+        strict = true,
+        safeIntegers = true,
+        dbPath = config.dbPath,
+        quiet = false,
+        clean = false,
+        seed = false
+    } = options;
+
+    if (!quiet) console.log("Setting up database...");
+
+    // Open database connection
+    const db = new Database(dbPath, { readonly, create });
+    
+    if (strict) db.run("PRAGMA strict = ON");
+    if (safeIntegers) db.run("PRAGMA trusted_schema = 0");
+    
+    configureDatabaseSettings(db);
+
+    // Only drop and recreate tables if clean is true
+    if (clean) {
+        if (!quiet) console.log("Cleaning database...");
+        // Disable foreign keys while dropping tables
+        setForeignKeyConstraints(db, false, quiet);
+        
+        // Drop existing tables in correct order
+        for (const table of DROP_TABLE_ORDER) {
+            db.run(`DROP TABLE IF EXISTS ${table}`);
         }
-    };
-    
-    log("Setting up database at: " + dbPath);
-    
-    try {
-        // Open the database with strict mode and safe integers
-        const db = new Database(dbPath, {
-            create: true,
-            ...options,
-            strict: true,
-            safeIntegers: true,
-        });
-
-        // Configure database settings
-        log("Configuring database settings...");
-        configureDatabaseSettings(db);
-
-        // Temporarily disable foreign keys for setup
-        log("Temporarily disabling foreign keys...");
-        setForeignKeyConstraints(db, false, options.quiet);
-
-        // Create schema
-        db.transaction(() => {
-            try {
-                log("Dropping existing tables...");
-                // Drop existing tables in correct order
-                for (const tableName of DROP_TABLE_ORDER) {
-                    db.run(`DROP TABLE IF EXISTS ${tableName}`);
-                }
-
-                log("Reading schema.sql...");
-                // Read and execute schema SQL
-                const schemaPath = path.join(import.meta.dir, "schema.sql");
-                const schemaSql = readFileSync(schemaPath, "utf-8");
-                
-                log("Creating new schema...");
-                db.run(schemaSql);
-            } catch (error) {
-                console.error("Error creating schema:", error);
-                throw new Error(`Failed to create schema: ${error}`);
-            }
-        })();
-
-        // Re-enable foreign keys
-        log("Re-enabling foreign keys...");
-        setForeignKeyConstraints(db, true, options.quiet);
-
-        // Verify the schema was created correctly
-        log("Verifying schema...");
-        await verifySchema(db, options.quiet);
-
-        log("Database setup completed successfully");
-        return db;
-    } catch (error) {
-        console.error("Database setup failed:", error);
-        throw error;
+        
+        // Re-enable foreign keys for table creation
+        setForeignKeyConstraints(db, true, quiet);
+        
+        // Create tables
+        const schema = readFileSync(path.join(__dirname, "schema.sql"), "utf8");
+        db.run(schema);
+        
+        if (!quiet) console.log("Database schema created");
     }
+
+    // Verify schema is correct
+    await verifySchema(db, quiet);
+    
+    return db;
 }
 
 // Allow running directly

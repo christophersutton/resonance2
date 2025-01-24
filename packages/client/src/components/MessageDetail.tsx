@@ -31,14 +31,15 @@ export const MessageDetail = ({ message, onBack }: MessageDetailProps) => {
     const newMessage = await createMessage({
       clientId: message.clientId,
       taskId: message.taskId,
-      direction: 'OUTBOUND',
+      direction: 'outbound',
       body: reply,
-      status: 'draft'
+      status: 'sent',
+      sentAt: new Date().toISOString()
     });
 
     if (newMessage) {
-      await sendMessage(newMessage.id);
       setReply("");
+      // No need to call sendMessage since it's already sent
     }
   };
 
@@ -75,9 +76,9 @@ export const MessageDetail = ({ message, onBack }: MessageDetailProps) => {
 
           <div className={cn(
             "flex w-full mb-8 flex-col",
-            message.direction === 'INBOUND' ? "items-start" : "items-end"
+            message.direction === 'inbound' ? "items-start" : "items-end"
           )}>
-            {message.direction === 'INBOUND' && selectedClient && (
+            {message.direction === 'inbound' && selectedClient && (
               <div className="flex items-baseline gap-2 mb-1 ml-4">
                 <span className="text-sm font-medium">
                   {selectedClient.firstName}
@@ -89,7 +90,7 @@ export const MessageDetail = ({ message, onBack }: MessageDetailProps) => {
             )}
             <div className={cn(
               "max-w-[80%] p-4 rounded-lg",
-              message.direction === 'INBOUND'
+              message.direction === 'inbound'
                 ? "bg-gray-100 rounded-tl-none"
                 : "bg-blue-500 text-white rounded-tr-none",
               message.status === 'draft' && "opacity-70"
@@ -97,7 +98,7 @@ export const MessageDetail = ({ message, onBack }: MessageDetailProps) => {
               <p className="text-sm">{message.body}</p>
               <div className={cn(
                 "flex items-center gap-2 text-[11px] mt-1",
-                message.direction === 'INBOUND' ? "text-gray-500" : "text-blue-100"
+                message.direction === 'inbound' ? "text-gray-500" : "text-blue-100"
               )}>
                 {message.status === 'draft' && (
                   <span className="bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded text-xs">

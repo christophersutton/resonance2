@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:clean": "bun src/index.ts --clean",
+    "db:seed": "bun src/index.ts --clean --seed",
+    "db:setup": "bun src/db/setup.ts"
   },
   "dependencies": {
     "@resonance2/shared": "workspace:*",

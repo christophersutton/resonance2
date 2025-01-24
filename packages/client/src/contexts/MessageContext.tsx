@@ -1,14 +1,10 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useToast } from '../hooks/use-toast';
+import type { Message as SharedMessage } from '../../../shared/src/types/entities';
+import type { MessageDirection } from '../../../shared/src/types/enums';
 
-export interface Message {
-  id: number;
-  clientId: number;
-  taskId?: number;
-  direction: 'INBOUND' | 'OUTBOUND';
-  body: string;
+export interface Message extends SharedMessage {
   status: 'draft' | 'sent';
-  createdAt: string;
   updatedAt: string;
 }
 
@@ -89,8 +85,23 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, []);
 
   const createMessage = useCallback(async (message: Partial<Message>) => {
-    setLoading(true);
     setError(null);
+    
+    // Create optimistic message
+    const optimisticMessage: Message = {
+      id: Date.now(), // Temporary ID
+      clientId: message.clientId!,
+      direction: message.direction!,
+      body: message.body!,
+      status: message.status || 'sent',
+      createdAt: new Date().toISOString(),
+      sentAt: message.sentAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // Add optimistic message immediately
+    setMessages(prev => [...prev, optimisticMessage]);
+
     try {
       const response = await fetch('http://localhost:3000/api/messages', {
         method: 'POST',
@@ -103,13 +114,18 @@ export const MessageProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (!response.ok) throw new Error('Failed to create message');
       
       const newMessage = await response.json();
-      setMessages(prev => [...prev, newMessage]);
+      
+      // Replace optimistic message with real one
+      setMessages(prev => prev.map(m => 
+        m.id === optimisticMessage.id ? newMessage : m
+      ));
+      
       return newMessage;
     } catch (error) {
+      // Remove optimistic message on error
+      setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id));
       handleError(error, 'Failed to create message');
       return null;
-    } finally {
-      setLoading(false);
     }
   }, []);
 

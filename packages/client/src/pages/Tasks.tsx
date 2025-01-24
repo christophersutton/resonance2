@@ -3,7 +3,7 @@ import { Badge } from "../components/ui/badge";
 import { useState, useEffect } from "react";
 import { TaskDetail } from "../components/TaskDetail";
 import { useClient } from "../contexts/ClientContext";
-import type { Task, TaskStatus } from "../types/task";
+import type { Task, TaskStatus } from "@resonance/shared/src/types/enums";
 import { useToast } from "../components/ui/use-toast";
 
 const Tasks = () => {
@@ -44,12 +44,17 @@ const Tasks = () => {
 
   const getStatusIcon = (status: TaskStatus) => {
     switch (status) {
-      case "completed":
+      case "closed":
         return <CheckCircle2 className="h-5 w-5 text-green-500" />;
       case "in_progress":
         return <Clock className="h-5 w-5 text-blue-500" />;
       case "open":
         return <Circle className="h-5 w-5 text-gray-500" />;
+      case "blocked":
+        return <AlertCircle className="h-5 w-5 text-red-500" />;
+      case "needs_review":
+      case "needs_client_review":
+        return <Clock className="h-5 w-5 text-yellow-500" />;
       default:
         return <AlertCircle className="h-5 w-5 text-red-500" />;
     }

@@ -23,13 +23,13 @@ const Index = () => {
   const { selectedClient } = useClient();
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen">
+    <div className="flex flex-col md:flex-row h-screen">
       <MainSidebar>
         {(props) => <MainSidebarContent {...props} />}
       </MainSidebar>
-      <div className="flex flex-1 pt-14 md:pt-0">
+      <div className="flex flex-1 pt-14 md:pt-0 overflow-hidden">
         <ClientSidebar />
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-hidden">
           <Routes>
             <Route path="/" element={
               selectedClient ? 

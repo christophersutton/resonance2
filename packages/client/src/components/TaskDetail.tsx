@@ -3,7 +3,7 @@ import { Textarea } from "../components/ui/textarea";
 import { useState } from "react";
 import { ArrowLeft, Save } from "lucide-react";
 import { useToast } from "../components/ui/use-toast";
-import type { Task, TaskStatus, TaskType, TaskUrgency, ServiceCategory } from "../types/task";
+import type { Task, TaskStatus, TaskType, TaskUrgency, ServiceCategory } from "@resonance/shared/src/types/enums";
 
 type TaskDetailProps = {
   task: Task;

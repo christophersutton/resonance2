@@ -40,7 +40,11 @@ export class MessageRepository extends BaseRepository<MessageRow, Message> {
     }
 
     async findByClientId(clientId: number): Promise<Message[]> {
-        const rows = this.db.query('SELECT * FROM messages WHERE client_id = ? ORDER BY sent_at DESC')
+        const rows = this.db.query(`
+            SELECT * FROM messages 
+            WHERE client_id = ? 
+            ORDER BY created_at ASC
+        `)
             .as(MessageRow)
             .all(clientId) as MessageRow[];
         

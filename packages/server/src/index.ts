@@ -4,9 +4,25 @@ import { setupRoutes } from "./api/routes";
 import { config } from "./config";
 import { setupDatabase } from "./db/setup";
 
+// Parse command line arguments for database setup
+const args = process.argv.slice(2);
+const clean = args.includes('--clean');
+const seed = args.includes('--seed');
+
 // Initialize the database
 console.log("Using database path:", config.dbPath);
-const db = await setupDatabase({ dbPath: config.dbPath });
+const db = await setupDatabase({ 
+    dbPath: config.dbPath,
+    clean,
+    seed
+});
+
+if (seed) {
+    const { seedDatabase } = await import('./db/seeds');
+    await seedDatabase(db);
+    console.log("Database seeded successfully");
+}
+
 const app = new Hono();
 
 // Configure CORS
