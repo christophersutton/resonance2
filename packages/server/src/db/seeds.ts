@@ -55,22 +55,22 @@ const TEST_TASKS: Omit<Task, 'id' | 'clientId' | 'createdAt'>[] = [
 
 const TEST_MESSAGES: Omit<Message, 'id' | 'clientId' | 'taskId' | 'createdAt'>[] = [
     {
-        direction: "INBOUND",
+        direction: "inbound",
         body: "Hi, we need help with implementing OAuth2 for our users.",
         sentAt: new Date().toISOString()
     },
     {
-        direction: "OUTBOUND",
+        direction: "outbound",
         body: "I'll help you with that. Let me create a task to track this.",
         sentAt: new Date().toISOString()
     },
     {
-        direction: "INBOUND",
+        direction: "inbound",
         body: "We're also seeing some issues with duplicate charges in our payment system.",
         sentAt: new Date().toISOString()
     },
     {
-        direction: "OUTBOUND",
+        direction: "outbound",
         body: "I understand. I've created a high-priority task to investigate the payment issues.",
         sentAt: new Date().toISOString()
     }
