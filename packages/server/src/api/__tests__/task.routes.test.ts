@@ -68,6 +68,71 @@ describe("Task Routes", () => {
         });
     });
 
+    describe("GET /api/tasks with events", () => {
+        test("returns task with events when includeEvents=true", async () => {
+            // First create a task
+            const task = await taskRepo.create(testTaskData);
+            
+            // Create an event for the task
+            const result = await context.db.query(`
+                INSERT INTO events (task_id, event_type, details) 
+                VALUES (?, ?, ?)
+                RETURNING id
+            `).get(task.id, "STATUS_CHANGE", JSON.stringify({ from: "open", to: "in_progress" }));
+
+            // Verify event was created
+            expect(result).toBeDefined();
+            expect(result.id).toBeDefined();
+
+            // Verify event exists in database
+            const event = await context.db.query(`
+                SELECT * FROM events WHERE id = ?
+            `).get(result.id);
+            expect(event).toBeDefined();
+            expect(Number(event.task_id)).toBe(task.id);
+
+            const req = new Request("http://localhost/api/tasks?clientId=1&includeEvents=true");
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            
+            expect(Array.isArray(data)).toBe(true);
+            expect(data.length).toBeGreaterThan(0);
+            
+            // Find our specific task
+            const ourTask = data.find((t: any) => t.id === task.id);
+            expect(ourTask).toBeDefined();
+            expect(ourTask.events).toBeDefined();
+            expect(Array.isArray(ourTask.events)).toBe(true);
+            expect(ourTask.events.length).toBe(1);
+            expect(ourTask.events[0].eventType).toBe("STATUS_CHANGE");
+            expect(ourTask.events[0].details).toEqual({ from: "open", to: "in_progress" });
+
+            // Log the full data for debugging
+            console.log('Task data:', JSON.stringify(data, null, 2));
+        });
+
+        test("returns task without events when includeEvents is not set", async () => {
+            // First create a task
+            const task = await taskRepo.create(testTaskData);
+            
+            // Create an event for the task
+            await context.db.query(`
+                INSERT INTO events (task_id, event_type, details) 
+                VALUES (?, ?, ?)
+            `).run(task.id, "STATUS_CHANGE", JSON.stringify({ from: "open", to: "in_progress" }));
+
+            const req = new Request("http://localhost/api/tasks?clientId=1");
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            
+            expect(Array.isArray(data)).toBe(true);
+            expect(data.length).toBeGreaterThan(0);
+            expect(data[0].events).toBeUndefined();
+        });
+    });
+
     describe("GET /api/tasks/:id", () => {
         test("returns a single task", async () => {
             const task = await taskRepo.create(testTaskData);
@@ -84,6 +149,67 @@ describe("Task Routes", () => {
             const req = new Request("http://localhost/api/tasks/999999");
             const res = await app.fetch(req);
             expect(res.status).toBe(404);
+        });
+    });
+
+    describe("GET /api/tasks/:id with events", () => {
+        test("returns single task with events when includeEvents=true", async () => {
+            // First create a task
+            const task = await taskRepo.create(testTaskData);
+            
+            // Create multiple events for the task
+            await context.db.query(`
+                INSERT INTO events (task_id, event_type, details) 
+                VALUES 
+                    (?, ?, ?),
+                    (?, ?, ?)
+            `).run(
+                task.id, "STATUS_CHANGE", JSON.stringify({ from: "open", to: "in_progress" }),
+                task.id, "COMMENT_ADDED", JSON.stringify({ comment: "Test comment" })
+            );
+
+            const req = new Request(`http://localhost/api/tasks/${task.id}?includeEvents=true`);
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            
+            expect(data.id).toBe(task.id);
+            expect(data.events).toBeDefined();
+            expect(Array.isArray(data.events)).toBe(true);
+            expect(data.events.length).toBe(2);
+            
+            // Events should be in descending order by created_at
+            expect(data.events[0].eventType).toBeDefined();
+            expect(data.events[0].details).toBeDefined();
+            expect(data.events[1].eventType).toBeDefined();
+            expect(data.events[1].details).toBeDefined();
+        });
+
+        test("returns single task without events when includeEvents is not set", async () => {
+            // First create a task
+            const task = await taskRepo.create(testTaskData);
+            
+            // Create an event for the task
+            await context.db.query(`
+                INSERT INTO events (task_id, event_type, details) 
+                VALUES (?, ?, ?)
+            `).run(task.id, "STATUS_CHANGE", JSON.stringify({ from: "open", to: "in_progress" }));
+
+            const req = new Request(`http://localhost/api/tasks/${task.id}`);
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            
+            expect(data.id).toBe(task.id);
+            expect(data.events).toBeUndefined();
+        });
+
+        test("handles task not found with includeEvents=true", async () => {
+            const req = new Request("http://localhost/api/tasks/999?includeEvents=true");
+            const res = await app.fetch(req);
+            expect(res.status).toBe(404);
+            const data = await res.json();
+            expect(data.error).toBe("Task not found");
         });
     });
 

@@ -1,8 +1,11 @@
 import { Database } from "bun:sqlite";
 import { BaseRepository } from "./base";
-import { TaskRow } from "../types/rows";
-import type { Task } from "../../../../shared/src/types/entities";
+import { TaskRow, EventRow } from "../types/rows";
+import type { Task, Event } from "../../../../shared/src/types/entities";
 import type { TaskType, ServiceCategory, TaskUrgency, TaskStatus } from "../../../../shared/src/types/enums";
+
+// Type for Task with events array
+type TaskWithEvents = Task & { events: Event[] };
 
 export class TaskRepository extends BaseRepository<TaskRow, Task> {
     constructor(db: Database) {
@@ -55,5 +58,68 @@ export class TaskRepository extends BaseRepository<TaskRow, Task> {
             .all(status) as TaskRow[];
         
         return rows.map(row => this.mapToEntity(row));
+    }
+
+    async findByIdWithEvents(id: number): Promise<TaskWithEvents | null> {
+        const task = await this.findById(id);
+        if (!task) return null;
+
+        const events = this.db.query(`
+            SELECT 
+                id, task_id, client_id, event_type, 
+                details, created_at 
+            FROM events 
+            WHERE task_id = ? 
+            ORDER BY created_at DESC
+        `).all(id) as EventRow[];
+
+        return {
+            ...task,
+            events: events.map(row => ({
+                id: Number(row.id),
+                taskId: row.task_id ? Number(row.task_id) : undefined,
+                clientId: row.client_id ? Number(row.client_id) : undefined,
+                eventType: row.event_type,
+                details: row.details ? JSON.parse(row.details) : undefined,
+                createdAt: row.created_at
+            }))
+        };
+    }
+
+    async findByClientIdWithEvents(clientId: number): Promise<TaskWithEvents[]> {
+        const tasks = await this.findByClientId(clientId);
+        if (tasks.length === 0) return [];
+
+        // Get all events for these tasks in a single query
+        const events = this.db.query(`
+            SELECT 
+                id, task_id, client_id, event_type, 
+                details, created_at 
+            FROM events 
+            WHERE task_id IN (${tasks.map(() => '?').join(',')})
+            ORDER BY created_at DESC
+        `).all(...tasks.map(t => t.id)) as EventRow[];
+
+        // Create a map of taskId to events for efficient lookup
+        const eventsByTaskId = new Map<number, Event[]>();
+        events.forEach(row => {
+            const taskId = Number(row.task_id);
+            if (!eventsByTaskId.has(taskId)) {
+                eventsByTaskId.set(taskId, []);
+            }
+            eventsByTaskId.get(taskId)?.push({
+                id: Number(row.id),
+                taskId: row.task_id ? Number(row.task_id) : undefined,
+                clientId: row.client_id ? Number(row.client_id) : undefined,
+                eventType: row.event_type,
+                details: row.details ? JSON.parse(row.details) : undefined,
+                createdAt: row.created_at
+            });
+        });
+
+        return tasks.map(task => ({
+            ...task,
+            events: eventsByTaskId.get(task.id) || []
+        }));
     }
 }

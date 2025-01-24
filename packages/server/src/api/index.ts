@@ -1,11 +1,10 @@
 import { Hono } from "hono";
 import { cors } from 'hono/cors'
 import { Database } from "bun:sqlite";
-import { ClientRepository } from "../db/repositories/client";
-import { TaskRepository } from '../db/repositories/task';
-import { clientRoutes } from "./routes/clients";
-import { taskRoutes } from './routes/tasks';
+import { ClientRepository,  TaskRepository, MessageRepository } from "../db/repositories/";
 import { config } from '../config';
+import { clientRoutes, taskRoutes, messageRoutes } from "./routes";
+
 
 export function createApi(db: Database) {
     const app = new Hono();
@@ -19,10 +18,12 @@ export function createApi(db: Database) {
     // Initialize repositories
     const clientRepo = new ClientRepository(db);
     const taskRepo = new TaskRepository(db);
+    const messageRepo = new MessageRepository(db);
     
     // Mount routes
     app.route("/api/clients", clientRoutes(clientRepo));
     app.route('/api/tasks', taskRoutes(taskRepo));
+    app.route('/api/messages', messageRoutes(messageRepo));
     
     return app;
 }

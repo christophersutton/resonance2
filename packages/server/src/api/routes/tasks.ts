@@ -6,13 +6,16 @@ import type { TaskStatus } from "../../../../shared/src/types/enums";
 export function taskRoutes(taskRepo: TaskRepository) {
     const app = new Hono();
 
-    // GET /api/tasks - List all tasks (with optional clientId filter)
+    // GET /api/tasks - List all tasks (with optional clientId filter and events inclusion)
     app.get("/", async (c) => {
         try {
             const clientId = c.req.query("clientId");
+            const includeEvents = c.req.query("includeEvents") === "true";
             
             if (clientId) {
-                const tasks = await taskRepo.findByClientId(Number(clientId));
+                const tasks = includeEvents 
+                    ? await taskRepo.findByClientIdWithEvents(Number(clientId))
+                    : await taskRepo.findByClientId(Number(clientId));
                 return c.json(tasks);
             }
             
@@ -26,11 +29,15 @@ export function taskRoutes(taskRepo: TaskRepository) {
         }
     });
 
-    // GET /api/tasks/:id - Get single task
+    // GET /api/tasks/:id - Get single task (with optional events inclusion)
     app.get("/:id", async (c) => {
         try {
             const id = Number(c.req.param("id"));
-            const task = await taskRepo.findById(id);
+            const includeEvents = c.req.query("includeEvents") === "true";
+            
+            const task = includeEvents 
+                ? await taskRepo.findByIdWithEvents(id)
+                : await taskRepo.findById(id);
             
             if (!task) {
                 return c.json({ error: "Task not found" }, 404);
