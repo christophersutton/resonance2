@@ -1,0 +1,187 @@
+import { describe, expect, test, beforeEach, afterEach } from "bun:test";
+import { Hono } from "hono";
+import { TaskRepository } from "../../db/repositories/task";
+import { taskRoutes } from "../routes/tasks";
+import { createTestContext, cleanupTestContext } from "../../db/__tests__/test-utils";
+import type { TestContext } from "../../db/__tests__/test-utils";
+import type { Task } from "../../../../shared/src/types/entities";
+
+describe("Task Routes", () => {
+    let context: TestContext;
+    let app: Hono;
+    let taskRepo: TaskRepository;
+
+    const testTaskData: Omit<Task, 'id' | 'createdAt'> = {
+        clientId: 1,
+        type: "FEATURE_REQUEST",
+        serviceCategory: "DEV",
+        urgency: "medium",
+        status: "open",
+        title: "Test Task",
+        description: "This is a test task"
+    };
+
+    beforeEach(async () => {
+        context = await createTestContext();
+        taskRepo = new TaskRepository(context.db);
+        app = new Hono();
+        app.route("/api/tasks", taskRoutes(taskRepo));
+    });
+
+    afterEach(async () => {
+        await cleanupTestContext(context);
+    });
+
+    describe("GET /api/tasks", () => {
+        test("returns all tasks", async () => {
+            const req = new Request("http://localhost/api/tasks");
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(Array.isArray(data)).toBe(true);
+        });
+
+        test("returns tasks filtered by clientId", async () => {
+            // First create a task
+            const task = await taskRepo.create(testTaskData);
+            
+            const req = new Request("http://localhost/api/tasks?clientId=1");
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(Array.isArray(data)).toBe(true);
+            expect(data.length).toBeGreaterThan(0);
+            expect(data[0].clientId).toBe(1);
+        });
+
+        test("handles database errors gracefully", async () => {
+            const errorApp = new Hono();
+            const mockRepo = new TaskRepository(context.db);
+            mockRepo.findAll = async () => { throw new Error("Database error"); };
+            errorApp.route("/api/tasks", taskRoutes(mockRepo));
+
+            const req = new Request("http://localhost/api/tasks");
+            const res = await errorApp.fetch(req);
+            expect(res.status).toBe(500);
+            const data = await res.json();
+            expect(data.error).toBeDefined();
+        });
+    });
+
+    describe("GET /api/tasks/:id", () => {
+        test("returns a single task", async () => {
+            const task = await taskRepo.create(testTaskData);
+            
+            const req = new Request(`http://localhost/api/tasks/${task.id}`);
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.id).toBe(task.id);
+            expect(data.title).toBe(testTaskData.title);
+        });
+
+        test("returns 404 for non-existent task", async () => {
+            const req = new Request("http://localhost/api/tasks/999999");
+            const res = await app.fetch(req);
+            expect(res.status).toBe(404);
+        });
+    });
+
+    describe("POST /api/tasks", () => {
+        test("creates a new task", async () => {
+            const req = new Request("http://localhost/api/tasks", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(testTaskData)
+            });
+            const res = await app.fetch(req);
+            expect(res.status).toBe(201);
+            const data = await res.json();
+            expect(data.title).toBe(testTaskData.title);
+            expect(data.id).toBeDefined();
+        });
+
+        test("validates required fields", async () => {
+            const invalidData = {
+                clientId: 1,
+                // missing required fields
+                description: "Test task"
+            };
+            const req = new Request("http://localhost/api/tasks", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(invalidData)
+            });
+            const res = await app.fetch(req);
+            expect(res.status).toBe(400);
+            const data = await res.json();
+            expect(data.missingFields).toBeDefined();
+        });
+    });
+
+    describe("PUT /api/tasks/:id", () => {
+        test("updates an existing task", async () => {
+            const task = await taskRepo.create(testTaskData);
+            const updateData = { ...testTaskData, title: "Updated Title" };
+            
+            const req = new Request(`http://localhost/api/tasks/${task.id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(updateData)
+            });
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(data.title).toBe("Updated Title");
+        });
+
+        test("returns 404 for non-existent task", async () => {
+            const req = new Request("http://localhost/api/tasks/999999", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(testTaskData)
+            });
+            const res = await app.fetch(req);
+            expect(res.status).toBe(404);
+        });
+    });
+
+    describe("DELETE /api/tasks/:id", () => {
+        test("deletes an existing task", async () => {
+            const task = await taskRepo.create(testTaskData);
+            
+            const req = new Request(`http://localhost/api/tasks/${task.id}`, {
+                method: "DELETE"
+            });
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            
+            // Verify task is deleted
+            const deletedTask = await taskRepo.findById(task.id);
+            expect(deletedTask).toBeNull();
+        });
+
+        test("returns 404 for non-existent task", async () => {
+            const req = new Request("http://localhost/api/tasks/999999", {
+                method: "DELETE"
+            });
+            const res = await app.fetch(req);
+            expect(res.status).toBe(404);
+        });
+    });
+
+    describe("GET /api/tasks/status/:status", () => {
+        test("returns tasks filtered by status", async () => {
+            // Create a task with known status
+            await taskRepo.create(testTaskData);
+            
+            const req = new Request("http://localhost/api/tasks/status/open");
+            const res = await app.fetch(req);
+            expect(res.status).toBe(200);
+            const data = await res.json();
+            expect(Array.isArray(data)).toBe(true);
+            expect(data.length).toBeGreaterThan(0);
+            expect(data[0].status).toBe("open");
+        });
+    });
+});
