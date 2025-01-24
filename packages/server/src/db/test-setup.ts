@@ -5,19 +5,20 @@ import { ClientRow, TaskRow, DocumentRow } from "./types/rows";
 import { ClientRepository } from "./repositories/client";
 
 async function testDatabaseSetup() {
-    console.log("Starting database setup test...");
-    
     let db: Database;
     try {
         // Initialize and seed the database
-        db = await setupDatabase();
+        db = await setupDatabase({
+            create: true,
+            dbPath: ':memory:',
+            quiet: true
+        });
         await seedDatabase(db);
-        console.log("✓ Database initialized and seeded successfully");
 
         // Test basic queries using indexes
         const clientRepo = new ClientRepository(db);
         const client = await clientRepo.findByEmail('john.doe@acme.com');
-        console.log("✓ Client query successful:", client !== null);
+        if (!client) throw new Error("Client query failed");
 
         const taskQuery = db.query(`
             SELECT t.*, c.organization_name as client_organization_name
@@ -25,7 +26,7 @@ async function testDatabaseSetup() {
             JOIN clients c ON t.client_id = c.id
             WHERE t.type = 'FEATURE_REQUEST' AND t.status = 'open'
         `).as(TaskRow).all();
-        console.log("✓ Task join query successful:", taskQuery.length > 0);
+        if (taskQuery.length === 0) throw new Error("Task join query failed");
 
         const documentQuery = db.query(`
             SELECT d.*, dv.version_number 
@@ -33,7 +34,7 @@ async function testDatabaseSetup() {
             LEFT JOIN document_versions dv ON d.id = dv.document_id
             LIMIT 1
         `).as(DocumentRow).all();
-        console.log("✓ Document version query successful:", documentQuery.length > 0);
+        if (documentQuery.length === 0) throw new Error("Document version query failed");
 
         // Test foreign key constraints
         try {

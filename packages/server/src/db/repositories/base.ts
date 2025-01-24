@@ -1,11 +1,6 @@
 import { Database, Statement } from "bun:sqlite";
 import type { SQLQueryBindings } from "bun:sqlite";
-
-// Base type for all database rows
-export interface BaseRow {
-    id: bigint;
-    created_at: string;
-}
+import type { BaseRow } from "../types/rows";
 
 // Base type for all entities
 export interface BaseEntity {
@@ -44,31 +39,55 @@ export abstract class BaseRepository<TRow extends BaseRow, TEntity extends BaseE
 
     async create(entity: Omit<TEntity, 'id' | 'createdAt'>): Promise<TEntity> {
         const data = this.mapFromEntity(entity);
-        const keys = Object.keys(data);
-        const placeholders = keys.map(() => '?').join(', ');
+        const columns = Object.keys(data).join(', ');
+        const placeholders = Object.keys(data).map(() => '?').join(', ');
         const values = Object.values(data) as SQLQueryBindings[];
 
+        // Insert and get the created row in one step
         const row = await this.db.query(
-            `INSERT INTO ${this.tableName} (${keys.join(', ')}) 
+            `INSERT INTO ${this.tableName} (${columns}) 
              VALUES (${placeholders}) 
              RETURNING *`
-        ).as(this.rowType).get(...values) as TRow;
+        ).get(...values) as TRow;
+
+        if (!row) {
+            throw new Error('Failed to create entity');
+        }
 
         return this.mapToEntity(row);
     }
 
     async update(id: number, entity: Partial<Omit<TEntity, 'id' | 'createdAt'>>): Promise<TEntity | null> {
-        const data = this.mapFromEntity(entity as Omit<TEntity, 'id' | 'createdAt'>);
+        // For partial updates, we need to be careful about mapping fields
+        // We'll create a minimal entity with just the fields being updated
+        const partialEntity = Object.entries(entity).reduce((acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+        }, {} as Record<string, any>);
+
+        const data = this.mapFromEntity(partialEntity as any);
+        
+        if (Object.keys(data).length === 0) {
+            return this.findById(id);
+        }
+
         const setClause = Object.keys(data)
             .map(key => `${key} = ?`)
             .join(', ');
         const values = [...Object.values(data), id] as SQLQueryBindings[];
 
+        // First perform the update
         const result = await this.db.query(
-            `UPDATE ${this.tableName} SET ${setClause} WHERE id = ? RETURNING *`
-        ).as(this.rowType).get(...values) as TRow | null;
+            `UPDATE ${this.tableName} SET ${setClause} WHERE id = ?`
+        ).run(...values);
 
-        return result ? this.mapToEntity(result) : null;
+        // If no rows were modified, return null
+        if (result.changes === 0) {
+            return null;
+        }
+
+        // Return the updated entity
+        return this.findById(id);
     }
 
     async delete(id: number): Promise<boolean> {

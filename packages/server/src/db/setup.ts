@@ -7,6 +7,8 @@ export interface DatabaseOptions {
     create?: boolean;
     strict?: boolean;
     safeIntegers?: boolean;
+    dbPath?: string;
+    quiet?: boolean;
 }
 
 // Tables in order of dependencies (dependent tables first)
@@ -38,11 +40,13 @@ function configureDatabaseSettings(db: Database) {
 /**
  * Enable or disable foreign key constraints
  */
-function setForeignKeyConstraints(db: Database, enabled: boolean) {
+function setForeignKeyConstraints(db: Database, enabled: boolean, quiet?: boolean) {
     try {
         db.run(`PRAGMA foreign_keys = ${enabled ? 'ON' : 'OFF'}`);
-        const status = db.query("PRAGMA foreign_keys").get() as any[];
-        console.log("Foreign key status:", status);
+        if (!quiet) {
+            const status = db.query("PRAGMA foreign_keys").get() as any[];
+            console.log("Foreign key status:", status);
+        }
     } catch (error) {
         console.error("Error setting foreign keys:", error);
         throw error;
@@ -52,7 +56,7 @@ function setForeignKeyConstraints(db: Database, enabled: boolean) {
 /**
  * Verify that the database has all required tables
  */
-async function verifySchema(db: Database): Promise<void> {
+async function verifySchema(db: Database, quiet?: boolean): Promise<void> {
     const tables = db.query(`
         SELECT name 
         FROM sqlite_master 
@@ -62,15 +66,23 @@ async function verifySchema(db: Database): Promise<void> {
     `).values();
     
     const tableNames = new Set(tables.map(([name]) => name));
-    console.log("Created tables:", Array.from(tableNames).join(", "));
+    if (!quiet) {
+        console.log("Created tables:", Array.from(tableNames).join(", "));
+    }
 }
 
 /**
  * Set up a new SQLite database with the required schema
  */
 export async function setupDatabase(options: DatabaseOptions = {}): Promise<Database> {
-    const dbPath = path.join(import.meta.dir, "../../../server/db/db.sqlite");
-    console.log("Setting up database at:", dbPath);
+    const dbPath = options.dbPath || path.join(import.meta.dir, "../../../server/db/db.sqlite");
+    const log = (message: string) => {
+        if (!options.quiet) {
+            console.log(message);
+        }
+    };
+    
+    log("Setting up database at: " + dbPath);
     
     try {
         // Open the database with strict mode and safe integers
@@ -82,28 +94,28 @@ export async function setupDatabase(options: DatabaseOptions = {}): Promise<Data
         });
 
         // Configure database settings
-        console.log("Configuring database settings...");
+        log("Configuring database settings...");
         configureDatabaseSettings(db);
 
         // Temporarily disable foreign keys for setup
-        console.log("Temporarily disabling foreign keys...");
-        setForeignKeyConstraints(db, false);
+        log("Temporarily disabling foreign keys...");
+        setForeignKeyConstraints(db, false, options.quiet);
 
         // Create schema
         db.transaction(() => {
             try {
-                console.log("Dropping existing tables...");
+                log("Dropping existing tables...");
                 // Drop existing tables in correct order
                 for (const tableName of DROP_TABLE_ORDER) {
                     db.run(`DROP TABLE IF EXISTS ${tableName}`);
                 }
 
-                console.log("Reading schema.sql...");
+                log("Reading schema.sql...");
                 // Read and execute schema SQL
                 const schemaPath = path.join(import.meta.dir, "schema.sql");
                 const schemaSql = readFileSync(schemaPath, "utf-8");
                 
-                console.log("Creating new schema...");
+                log("Creating new schema...");
                 db.run(schemaSql);
             } catch (error) {
                 console.error("Error creating schema:", error);
@@ -112,14 +124,14 @@ export async function setupDatabase(options: DatabaseOptions = {}): Promise<Data
         })();
 
         // Re-enable foreign keys
-        console.log("Re-enabling foreign keys...");
-        setForeignKeyConstraints(db, true);
+        log("Re-enabling foreign keys...");
+        setForeignKeyConstraints(db, true, options.quiet);
 
         // Verify the schema was created correctly
-        console.log("Verifying schema...");
-        await verifySchema(db);
+        log("Verifying schema...");
+        await verifySchema(db, options.quiet);
 
-        console.log("Database setup completed successfully");
+        log("Database setup completed successfully");
         return db;
     } catch (error) {
         console.error("Database setup failed:", error);

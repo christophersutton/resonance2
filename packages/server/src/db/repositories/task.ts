@@ -27,16 +27,18 @@ export class TaskRepository extends BaseRepository<TaskRow, Task> {
         };
     }
 
-    protected mapFromEntity(entity: Omit<Task, 'id' | 'createdAt'>): Partial<TaskRow> {
-        return {
-            client_id: BigInt(entity.clientId),
-            type: entity.type,
-            service_category: entity.serviceCategory,
-            urgency: entity.urgency,
-            status: entity.status,
-            title: entity.title,
-            description: entity.description
-        };
+    protected mapFromEntity(entity: Partial<Omit<Task, 'id' | 'createdAt'>>): Partial<TaskRow> {
+        const mapped: Partial<TaskRow> = {};
+        
+        if ('clientId' in entity) mapped.client_id = entity.clientId;
+        if ('type' in entity) mapped.type = entity.type;
+        if ('serviceCategory' in entity) mapped.service_category = entity.serviceCategory;
+        if ('urgency' in entity) mapped.urgency = entity.urgency;
+        if ('status' in entity) mapped.status = entity.status;
+        if ('title' in entity) mapped.title = entity.title;
+        if ('description' in entity) mapped.description = entity.description;
+        
+        return mapped;
     }
 
     async findByClientId(clientId: number): Promise<Task[]> {

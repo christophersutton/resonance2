@@ -1,4 +1,5 @@
 import { Database } from "bun:sqlite";
+import { type DatabaseOptions } from "./setup";
 import type { Client, Task } from "../../../shared/src/types/entities";
 import { ClientRepository } from "./repositories/client";
 import { TaskRepository } from "./repositories/task";
@@ -49,8 +50,14 @@ const TEST_TASKS: Omit<Task, 'id' | 'clientId' | 'createdAt'>[] = [
     }
 ];
 
-export async function seedDatabase(db: Database) {
-    console.log("Starting database seeding...");
+export async function seedDatabase(db: Database, options?: DatabaseOptions) {
+    const log = (message: string) => {
+        if (!options?.quiet) {
+            console.log(message);
+        }
+    };
+
+    log("Starting database seeding...");
     
     try {
         const clientRepo = new ClientRepository(db);
@@ -60,7 +67,7 @@ export async function seedDatabase(db: Database) {
         const clients = await Promise.all(
             TEST_CLIENTS.map(client => clientRepo.create(client))
         );
-        console.log(`✓ Created ${clients.length} test clients`);
+        log(`✓ Created ${clients.length} test clients`);
 
         const firstClient = clients[0];
         if (!firstClient) throw new Error("Failed to create test client");
@@ -72,7 +79,7 @@ export async function seedDatabase(db: Database) {
                 clientId: firstClient.id
             }))
         );
-        console.log(`✓ Created ${tasks.length} test tasks`);
+        log(`✓ Created ${tasks.length} test tasks`);
 
         // Add task dependencies
         if (tasks.length >= 2) {
@@ -81,12 +88,12 @@ export async function seedDatabase(db: Database) {
                     dependent_task_id, required_task_id
                 ) VALUES (?, ?)
             `, [tasks[1].id, tasks[0].id]);
-            console.log("✓ Created test task dependency");
+            log("✓ Created test task dependency");
         }
 
-        console.log("✓ Database seeded successfully");
+        log("✓ Database seeded successfully");
     } catch (err) {
-        console.error("✗ Failed to seed database:", err);
+        log(`✗ Failed to seed database: ${err}`);
         throw err;
     }
 }

@@ -14,9 +14,8 @@ export class ClientRepository extends BaseRepository<ClientRow, Client> {
     }
 
     protected mapToEntity(row: ClientRow): Client {
-        const id = typeof row.id === 'bigint' ? Number(row.id) : row.id;
         return {
-            id,
+            id: Number(row.id),
             organizationName: row.organization_name,
             firstName: row.first_name,
             lastName: row.last_name,
@@ -27,15 +26,17 @@ export class ClientRepository extends BaseRepository<ClientRow, Client> {
         };
     }
 
-    protected mapFromEntity(entity: Omit<Client, 'id' | 'createdAt'>): Partial<ClientRow> {
-        return {
-            organization_name: entity.organizationName,
-            first_name: entity.firstName,
-            last_name: entity.lastName,
-            email: entity.email,
-            phone: entity.phone,
-            services: JSON.stringify(entity.services)
-        };
+    protected mapFromEntity(entity: Partial<Omit<Client, 'id' | 'createdAt'>>): Partial<ClientRow> {
+        const mapped: Partial<ClientRow> = {};
+
+        if ('organizationName' in entity) mapped.organization_name = entity.organizationName;
+        if ('firstName' in entity) mapped.first_name = entity.firstName;
+        if ('lastName' in entity) mapped.last_name = entity.lastName;
+        if ('email' in entity) mapped.email = entity.email;
+        if ('phone' in entity) mapped.phone = entity.phone;
+        if ('services' in entity) mapped.services = JSON.stringify(entity.services);
+
+        return mapped;
     }
 
     async findByEmail(email: string): Promise<Client | null> {
