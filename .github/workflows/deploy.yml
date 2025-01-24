@@ -26,6 +26,7 @@ jobs:
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           MAILGUN_API_KEY=${{ secrets.MAILGUN_API_KEY }}
           MAILGUN_DOMAIN=${{ secrets.MAILGUN_DOMAIN }}
+          NGROK_AUTHTOKEN=${{ secrets.NGROK_AUTHTOKEN }}
           EOF
 
       - name: Deploy to EC2
@@ -44,6 +45,7 @@ jobs:
             JWT_SECRET=${{ secrets.JWT_SECRET }}
             MAILGUN_API_KEY=${{ secrets.MAILGUN_API_KEY }}
             MAILGUN_DOMAIN=${{ secrets.MAILGUN_DOMAIN }}
+            NGROK_AUTHTOKEN=${{ secrets.NGROK_AUTHTOKEN }}
             EOF
             docker compose stop app
             docker compose up --build -d app
