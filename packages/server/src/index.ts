@@ -5,6 +5,7 @@ import { config } from "./config";
 import { setupDatabase } from "./db/setup";
 
 // Initialize the database
+console.log("Using database path:", config.dbPath);
 const db = await setupDatabase({ dbPath: config.dbPath });
 const app = new Hono();
 
@@ -34,4 +35,4 @@ Bun.serve({
   fetch: app.fetch,
 });
 
-console.log("🦊 Server is running at http://localhost:3000");
+console.log(" Server is running at http://localhost:3000");

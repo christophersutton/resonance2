@@ -2,6 +2,7 @@
 import { Database } from "bun:sqlite";
 import path from "path";
 import { readFileSync } from "fs";
+import { config } from "../config";
 
 export interface DatabaseOptions {
     readonly?: boolean;
@@ -77,7 +78,7 @@ async function verifySchema(db: Database, quiet?: boolean): Promise<void> {
  * Set up a new SQLite database with the required schema
  */
 export async function setupDatabase(options: DatabaseOptions = {}): Promise<Database> {
-    const dbPath = options.dbPath || path.join(import.meta.dir, "../../../server/db/db.sqlite");
+    const dbPath = options.dbPath || config.dbPath;
     const log = (message: string) => {
         if (!options.quiet) {
             console.log(message);

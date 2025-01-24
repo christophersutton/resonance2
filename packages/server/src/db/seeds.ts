@@ -197,7 +197,6 @@ export async function seedDatabase(db: Database, options?: DatabaseOptions) {
 
 // Allow running directly
 if (import.meta.main) {
-    
     const db = new Database(config.dbPath);
     seedDatabase(db)
         .then(() => console.log("Seeding completed"))
