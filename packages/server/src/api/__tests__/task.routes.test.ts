@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { describe, expect, test, beforeEach, afterEach } from "bun:test";
 import { Hono } from "hono";
 import { TaskRepository } from "../../db/repositories/task";

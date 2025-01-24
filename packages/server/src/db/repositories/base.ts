@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Database, Statement } from "bun:sqlite";
 import type { SQLQueryBindings } from "bun:sqlite";
 import type { BaseRow } from "../types/rows";

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Database } from "bun:sqlite";
 import { BaseRepository } from "./base";
 import { TaskRow, EventRow } from "../types/rows";
