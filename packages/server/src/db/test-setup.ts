@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { setupDatabase } from "./setup";
 import { seedDatabase } from "./seeds";
 import { Database } from "bun:sqlite";
