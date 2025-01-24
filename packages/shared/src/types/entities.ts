@@ -74,3 +74,13 @@ export interface DocumentVersion {
     uploadedAt: string; // ISO datetime string
     description?: string;
 }
+
+export interface User extends BaseEntity {
+    id: number;
+    email: string;
+    role: string;
+    lastLogin: string | null;
+    magicLinkToken: string | null;
+    magicLinkExpires: string | null;
+    createdAt: string; // ISO datetime string
+}

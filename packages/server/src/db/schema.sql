@@ -84,6 +84,17 @@ CREATE TABLE messages (
     FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
 
+-- Users table for authentication
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE,
+    role TEXT NOT NULL DEFAULT 'user', -- 'admin', 'user'
+    last_login DATETIME,
+    magic_link_token TEXT,
+    magic_link_expires DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes for better query performance
 CREATE INDEX idx_messages_client_task ON messages(client_id, task_id);
 CREATE INDEX idx_tasks_client_type_status ON tasks(client_id, type, status);
