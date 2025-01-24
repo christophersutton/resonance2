@@ -1,8 +1,8 @@
 import { Users, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { NewClientDialog } from "../NewClientDialog";
-import { useClient } from "@/contexts/ClientContext";
+import { useClient } from "../../contexts/ClientContext";
 import { Separator } from "../ui/separator";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 
 type MainSidebarContentProps = {
   isCollapsed: boolean;

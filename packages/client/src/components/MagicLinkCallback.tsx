@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/components/ui/use-toast';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../components/ui/use-toast';
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -45,6 +45,7 @@ export const MagicLinkCallback = () => {
           variant: "success"
         });
         navigate('/clients');
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         toast({
           title: "Error",

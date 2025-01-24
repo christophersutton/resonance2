@@ -1,6 +1,6 @@
 import { Menu } from "lucide-react";
 import { useState, useEffect } from "react";
-import { MobileSheetWrapper } from "@/components/mobile/MobileSheetWrapper";
+import { MobileSheetWrapper } from "../../../components/mobile/MobileSheetWrapper";
 import { ClientMenuItems } from "./ClientMenuItems";
 
 export const ClientSidebar = () => {

@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import {
   Form,
   FormControl,
@@ -6,12 +6,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "../components/ui/form";
+import { Input } from "../components/ui/input";
 import { useForm } from "react-hook-form";
-import { Service, SERVICE_LABELS, ClientFormData } from "@/types/client";
+import { Service, SERVICE_LABELS, ClientFormData } from "../types/client";
 import { Code2, Paintbrush2, Map, CircuitBoard, Check } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "../lib/utils";
 
 const services = [
   { 

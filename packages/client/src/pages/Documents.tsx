@@ -1,6 +1,6 @@
 import { FileText, Download, Calendar } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useClient } from "@/contexts/ClientContext";
+import { Button } from "../components/ui/button";
+import { useClient } from "../contexts/ClientContext";
 
 const Documents = () => {
   const { selectedClient } = useClient();

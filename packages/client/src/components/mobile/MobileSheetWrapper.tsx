@@ -1,4 +1,4 @@
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "../../components/ui/sheet";
 import { X } from "lucide-react";
 import { ReactNode } from "react";
 

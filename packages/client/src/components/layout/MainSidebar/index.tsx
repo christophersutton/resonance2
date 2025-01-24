@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Users } from "lucide-react";
-import { useClient } from "@/contexts/ClientContext";
-import { cn } from "@/lib/utils";
-import { MobileSheetWrapper } from "@/components/mobile/MobileSheetWrapper";
+import { useClient } from "../../../contexts/ClientContext";
+import { cn } from "../../../lib/utils";
+import { MobileSheetWrapper } from "../../../components/mobile/MobileSheetWrapper";
 
 type MainSidebarProps = {
   children: (props: {

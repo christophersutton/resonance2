@@ -1,13 +1,13 @@
-import { MainSidebar } from "@/components/layout/MainSidebar";
-import { MainSidebarContent } from "@/components/layout/MainSidebar/MainSidebarContent";
-import { ClientSidebar } from "@/components/layout/ClientSidebar";
+import { MainSidebar } from "../components/layout/MainSidebar";
+import { MainSidebarContent } from "../components/layout/MainSidebar/MainSidebarContent";
+import { ClientSidebar } from "../components/layout/ClientSidebar";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Messages from "./Messages";
 import Tasks from "./Tasks";
 import Documents from "./Documents";
 import Settings from "./Settings";
-import { ClientDashboard } from "@/components/ClientDashboard";
-import { useClient } from "@/contexts/ClientContext";
+import { ClientDashboard } from "../components/ClientDashboard";
+import { useClient } from "../contexts/ClientContext";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const { selectedClient } = useClient();

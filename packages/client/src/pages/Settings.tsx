@@ -1,8 +1,8 @@
-import { useClient } from "@/contexts/ClientContext";
-import { ClientForm } from "@/components/ClientForm";
-import { useToast } from "@/components/ui/use-toast";
-import type { ClientFormData } from "@/types/client";
-import { Button } from "@/components/ui/button";
+import { useClient } from "../contexts/ClientContext";
+import { ClientForm } from "../components/ClientForm";
+import { useToast } from "../components/ui/use-toast";
+import type { ClientFormData } from "../types/client";
+import { Button } from "../components/ui/button";
 import { Trash2 } from "lucide-react";
 
 const Settings = () => {

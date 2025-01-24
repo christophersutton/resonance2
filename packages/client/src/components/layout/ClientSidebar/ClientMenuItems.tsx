@@ -1,8 +1,8 @@
 import { MessageSquare, FileText, Settings, ListTodo } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Separator } from "@/components/ui/separator";
-import { useClient } from "@/contexts/ClientContext";
-import { cn } from "@/lib/utils";
+import { Separator } from "../../../components/ui/separator";
+import { useClient } from "../../../contexts/ClientContext";
+import { cn } from "../../../lib/utils";
 
 export const ClientMenuItems = () => {
   const navigate = useNavigate();

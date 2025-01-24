@@ -1,12 +1,12 @@
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "../components/ui/button";
+import { Textarea } from "../components/ui/textarea";
 import { useState } from "react";
 import { ArrowLeft, Send } from "lucide-react";
-import { useMessage } from "@/contexts/MessageContext";
-import type { Message } from "@/contexts/MessageContext";
+import { useMessage } from "../contexts/MessageContext";
+import type { Message } from "../contexts/MessageContext";
 import { format, isToday, isYesterday } from "date-fns";
-import { cn } from "@/lib/utils";
-import { useClient } from "@/contexts/ClientContext";
+import { cn } from "../lib/utils";
+import { useClient } from "../contexts/ClientContext";
 
 type MessageDetailProps = {
   message: Message;

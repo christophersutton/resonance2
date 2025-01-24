@@ -1,9 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "../components/ui/button";
+import { Textarea } from "../components/ui/textarea";
 import { useState } from "react";
 import { ArrowLeft, Save } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import type { Task, TaskStatus, TaskType, TaskUrgency, ServiceCategory } from "@/types/task";
+import { useToast } from "../components/ui/use-toast";
+import type { Task, TaskStatus, TaskType, TaskUrgency, ServiceCategory } from "../types/task";
 
 type TaskDetailProps = {
   task: Task;

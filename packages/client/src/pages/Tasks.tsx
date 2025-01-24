@@ -1,10 +1,10 @@
 import { CheckCircle2, Circle, Clock, AlertCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "../components/ui/badge";
 import { useState, useEffect } from "react";
-import { TaskDetail } from "@/components/TaskDetail";
-import { useClient } from "@/contexts/ClientContext";
-import type { Task, TaskStatus } from "@/types/task";
-import { useToast } from "@/components/ui/use-toast";
+import { TaskDetail } from "../components/TaskDetail";
+import { useClient } from "../contexts/ClientContext";
+import type { Task, TaskStatus } from "../types/task";
+import { useToast } from "../components/ui/use-toast";
 
 const Tasks = () => {
   const { selectedClient } = useClient();

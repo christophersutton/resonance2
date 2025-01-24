@@ -1,11 +1,10 @@
-import { MessageSquare, Clock } from "lucide-react";
-import { useClient } from "@/contexts/ClientContext";
-import { useMessage } from "@/contexts/MessageContext";
+import { useClient } from "../contexts/ClientContext";
+import { useMessage } from "../contexts/MessageContext";
 import { useState, useEffect } from "react";
-import { MessageDetail } from "@/components/MessageDetail";
-import type { Message } from "@/contexts/MessageContext";
-import { format, isToday, isYesterday, isSameDay } from "date-fns";
-import { cn } from "@/lib/utils";
+import { MessageDetail } from "../components/MessageDetail";
+import type { Message } from "../contexts/MessageContext";
+import { format, isToday, isYesterday } from "date-fns";
+import { cn } from "../lib/utils";
 
 const Messages = () => {
   const { selectedClient } = useClient();

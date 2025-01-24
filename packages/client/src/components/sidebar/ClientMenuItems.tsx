@@ -1,8 +1,8 @@
 import { MessageSquare, FileText, Settings, ListTodo, InboxIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "../ui/separator";
-import { useClient } from "@/contexts/ClientContext";
-import { useSidebar } from "@/components/ui/sidebar";
+import { useClient } from "../../contexts/ClientContext";
+import { useSidebar } from "../ui/sidebar";
 
 export const ClientMenuItems = () => {
   const navigate = useNavigate();
@@ -24,7 +24,7 @@ export const ClientMenuItems = () => {
     <div className="space-y-4">
       {isMainSidebarCollapsed && selectedClient && (
         <div className="px-2 py-4">
-          <h2 className="text-lg font-semibold text-gray-700">{selectedClient.name}</h2>
+          <h2 className="text-lg font-semibold text-gray-700">{selectedClient.firstName}</h2>
         </div>
       )}
 
