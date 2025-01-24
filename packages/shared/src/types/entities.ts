@@ -15,13 +15,14 @@ export interface Client extends BaseEntity {
     createdAt: string; // ISO datetime string
 }
 
-export interface Message {
+export interface Message extends BaseEntity {
     id: number;
     clientId: number;
     taskId?: number;
     direction: MessageDirection;
     body: string;
-    sentAt: string; // ISO datetime string
+    sentAt?: string; // Optional for draft messages
+    createdAt: string; // ISO datetime string
 }
 
 export interface Task extends BaseEntity {

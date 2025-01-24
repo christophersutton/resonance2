@@ -38,7 +38,10 @@ export abstract class BaseRepository<TRow extends BaseRow, TEntity extends BaseE
     }
 
     async create(entity: Omit<TEntity, 'id' | 'createdAt'>): Promise<TEntity> {
-        const data = this.mapFromEntity(entity);
+        const data = {
+            ...this.mapFromEntity(entity),
+            created_at: new Date().toISOString()
+        };
         const columns = Object.keys(data).join(', ');
         const placeholders = Object.keys(data).map(() => '?').join(', ');
         const values = Object.values(data) as SQLQueryBindings[];

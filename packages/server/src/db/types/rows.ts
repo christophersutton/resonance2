@@ -37,7 +37,7 @@ export class MessageRow implements BaseRow {
     task_id?: number;
     direction!: MessageDirection;
     body!: string;
-    sent_at!: string;
+    sent_at?: string; // Optional for draft messages
     created_at!: string;
 }
 

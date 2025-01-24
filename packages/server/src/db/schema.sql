@@ -78,7 +78,8 @@ CREATE TABLE messages (
     task_id INTEGER,
     direction TEXT NOT NULL, -- 'inbound' or 'outbound'
     body TEXT NOT NULL,
-    sent_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sent_at DATETIME, -- Nullable to support drafts
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (client_id) REFERENCES clients(id),
     FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
