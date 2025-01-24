@@ -21,12 +21,14 @@ export class OpenAIService {
   async classifyMessage(content: string): Promise<MessageClassification> {
     console.log('🤖 Preparing OpenAI classification request');
     const prompt = `Analyze the following message and classify it according to our task system. 
-    Extract the following information:
-    - Task type (FEATURE_REQUEST, BUG, REVISION, RESEARCH, or QUESTION)
-    - Service category (STRATEGY, DESIGN, DEV, or CONSULT)
-    - Urgency (urgent, medium, or low)
-    - A concise title
-    - A clear description
+    Extract the following information and return it in JSON format with these exact field names:
+    {
+      "taskType": "(FEATURE_REQUEST, BUG, REVISION, RESEARCH, or QUESTION)",
+      "serviceCategory": "(STRATEGY, DESIGN, DEV, or CONSULT)",
+      "urgency": "(urgent, medium, or low)",
+      "title": "A concise title",
+      "description": "A clear description"
+    }
     
     Message:
     ${content}
@@ -51,15 +53,30 @@ export class OpenAIService {
     console.log('📥 Received OpenAI response');
 
     const result = JSON.parse(response.choices[0].message.content || '{}');
-    console.log('✅ Parsed classification:', result);
+    console.log('📊 Raw OpenAI response:', response.choices[0].message.content);
+    console.log('🔍 Parsed result:', result);
     
-    return {
-      taskType: result.taskType,
-      serviceCategory: result.serviceCategory,
-      urgency: result.urgency,
-      title: result.title,
-      description: result.description,
+    // Normalize field names from the response
+    const normalizedResult = {
+      taskType: result.taskType || result['Task type'],
+      serviceCategory: result.serviceCategory || result['Service category'],
+      urgency: result.urgency || result['Urgency'],
+      title: result.title || result['Title'],
+      description: result.description || result['Description']
     };
+    
+    console.log('🔄 Normalized result:', normalizedResult);
+    
+    // Validate required fields
+    const requiredFields = ['taskType', 'serviceCategory', 'urgency', 'title', 'description'];
+    const missingFields = requiredFields.filter(field => !normalizedResult[field]);
+    if (missingFields.length > 0) {
+      console.error('❌ Missing required fields in normalized result:', missingFields);
+      throw new Error(`OpenAI response missing required fields: ${missingFields.join(', ')}`);
+    }
+    
+    console.log('✅ Final classification:', normalizedResult);
+    return normalizedResult;
   }
 }
 

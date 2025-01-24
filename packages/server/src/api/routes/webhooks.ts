@@ -47,26 +47,31 @@ export const webhookRoutes = ({ messageRepo, taskRepo, clientRepo }: {
 
         // Process email content
         const emailData = {
-          sender,
-          recipient: body['recipient'],
-          subject: body['subject'],
+          sender: body['sender'].toString(),
+          recipient: body['recipient'].toString(),
+          subject: body['subject'].toString(),
           body: {
-            plain: body['body-plain'],
-            html: body['body-html'],
+            plain: body['body-plain'].toString(),
+            html: body['body-html']?.toString(),
           },
        
-          timestamp_token: body['timestamp'],
+          timestamp: new Date().toISOString(),
+          timestamp_token: body['timestamp']?.toString(),
         };
 
-        console.log('🤖 Processing email content with AI...');
-        const classification: MessageClassification = {
-          taskType: 'FEATURE_REQUEST',
-          serviceCategory: 'DEV',
-          urgency: 'medium',
-          title: 'Test Task',
-          description: 'This is a test task',
+        // For testing: Override email content with test data
+        const testEmailData = {
+          ...emailData,
+          subject: "Bug Report: Login page not working on mobile",
+          body: {
+            plain: "Hi team, I've noticed that the login page is not working properly on mobile devices. When I try to log in using my iPhone, the submit button is not responding to taps. This is blocking our mobile users from accessing the platform. Could you please look into this as soon as possible? Thanks!",
+            html: emailData.body.html,
+          }
         };
-        const cleanContent = 'This is some test email content';
+        
+        console.log('🧪 Using test email data for development');
+        const { classification, cleanContent } = await emailService.processIncomingEmail(testEmailData);
+        
         console.log('✅ AI Classification:', classification);
 
         // Create message record
@@ -81,7 +86,7 @@ export const webhookRoutes = ({ messageRepo, taskRepo, clientRepo }: {
 
         // Create or update task
         console.log('📋 Creating task...');
-        const task = await taskRepo.create({
+        const taskData = {
           clientId: client.id,
           type: classification.taskType,
           serviceCategory: classification.serviceCategory,
@@ -89,7 +94,9 @@ export const webhookRoutes = ({ messageRepo, taskRepo, clientRepo }: {
           title: classification.title,
           description: classification.description,
           status: 'open',
-        });
+        };
+        console.log('🔍 Task data:', taskData);
+        const task = await taskRepo.create(taskData);
         console.log('✅ Created task:', { id: task.id, title: task.title });
 
         // Link message to task
