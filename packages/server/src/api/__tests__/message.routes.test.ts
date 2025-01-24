@@ -13,7 +13,7 @@ describe("Message Routes", () => {
 
     const testMessageData: Omit<Message, 'id' | 'createdAt' | 'sentAt'> = {
         clientId: 1,
-        direction: "OUTBOUND",
+        direction: "outbound",
         body: "Test message content"
     };
 

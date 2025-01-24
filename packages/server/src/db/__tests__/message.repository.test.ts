@@ -207,7 +207,11 @@ describe("MessageRepository", () => {
             const created = await repository.create(testMessageData);
             expect(created.direction).toBe(testMessageData.direction);
             expect(created.body).toBe(testMessageData.body);
-            expect(created.sentAt).toBe(testMessageData.sentAt);
+            if (testMessageData.sentAt) {
+                expect(created.sentAt).toBe(testMessageData.sentAt);
+            } else {
+                expect(created.sentAt).toBeNull();
+            }
             expect(created.clientId).toBe(testMessageData.clientId);
         });
     });
