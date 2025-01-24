@@ -59,18 +59,9 @@ export const webhookRoutes = ({ messageRepo, taskRepo, clientRepo }: {
           timestamp_token: body['timestamp']?.toString(),
         };
 
-        // For testing: Override email content with test data
-        const testEmailData = {
-          ...emailData,
-          subject: "Bug Report: Login page not working on mobile",
-          body: {
-            plain: "Hi team, I've noticed that the login page is not working properly on mobile devices. When I try to log in using my iPhone, the submit button is not responding to taps. This is blocking our mobile users from accessing the platform. Could you please look into this as soon as possible? Thanks!",
-            html: emailData.body.html,
-          }
-        };
-        
+        //
         console.log('🧪 Using test email data for development');
-        const { classification, cleanContent } = await emailService.processIncomingEmail(testEmailData);
+        const { classification, cleanContent } = await emailService.processIncomingEmail(emailData);
         
         console.log('✅ AI Classification:', classification);
 
