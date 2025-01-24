@@ -3,6 +3,7 @@ import { type DatabaseOptions } from "./setup";
 import type { Client, Task } from "../../../shared/src/types/entities";
 import { ClientRepository } from "./repositories/client";
 import { TaskRepository } from "./repositories/task";
+import { config } from "../config";
 
 const TEST_CLIENTS: Omit<Client, 'id' | 'createdAt'>[] = [
     {
@@ -100,7 +101,8 @@ export async function seedDatabase(db: Database, options?: DatabaseOptions) {
 
 // Allow running directly
 if (import.meta.main) {
-    const db = new Database("db.sqlite");
+    
+    const db = new Database(config.dbPath);
     seedDatabase(db)
         .then(() => console.log("Seeding completed"))
         .catch(console.error)
