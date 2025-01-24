@@ -19,7 +19,8 @@ const DROP_TABLE_ORDER = [
     'task_dependencies',
     'events',
     'tasks',
-    'clients'
+    'clients',
+    'users'
 ];
 
 /**

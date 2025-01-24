@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@resonance2/shared": "workspace:*",
-    "hono": "^4.6.18"
+    "hono": "^4.6.18",
+    "mailgun.js": "^11.1.0"
   },
   "devDependencies": {
     "bun-types": "latest",
