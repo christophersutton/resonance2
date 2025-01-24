@@ -37,23 +37,11 @@ const Index = () => {
               <div className="flex-1 p-8">Please select a client to continue</div>
             } />
             
-            <Route path="/clients/:clientId" element={
-              <ProtectedRoute>
-                <ClientDashboard />
-              </ProtectedRoute>
-            } />
+            <Route path="/clients/:clientId" element={<ClientDashboard />} />
             
-            <Route path="/clients/:clientId/messages" element={
-              <ProtectedRoute>
-                <Messages />
-              </ProtectedRoute>
-            } />
+            <Route path="/clients/:clientId/messages" element={<Messages />} />
             
-            <Route path="/clients/:clientId/tasks" element={
-              <ProtectedRoute>
-                <Tasks />
-              </ProtectedRoute>
-            } />
+            <Route path="/clients/:clientId/tasks" element={<Tasks />} />
             
             <Route path="/clients/:clientId/documents" element={
               <ProtectedRoute>
@@ -61,11 +49,7 @@ const Index = () => {
               </ProtectedRoute>
             } />
             
-            <Route path="/clients/:clientId/settings" element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } />
+            <Route path="/clients/:clientId/settings" element={<Settings />} />
 
             {/* Redirect old routes to new client-specific routes */}
             <Route path="/messages" element={

@@ -24,23 +24,13 @@ export function setupRoutes(db: Database) {
     const taskRepo = new TaskRepository(db);
     const userRepo = new UserRepository(db);
 
-    // Auth routes (no auth required)
+    // Auth routes
     app.route("/api/auth", authRoutes(userRepo));
 
-    // Protected API routes
-    const protectedRoutes = new Hono();
-    
-    // Apply auth middleware to all protected routes
-    protectedRoutes.use("*", authMiddleware);
-    protectedRoutes.use("*", requireAuth);
-
-    // Mount protected routes
-    protectedRoutes.route("/clients", clientRoutes(clientRepo));
-    protectedRoutes.route("/messages", messageRoutes(messageRepo));
-    protectedRoutes.route("/tasks", taskRoutes(taskRepo));
-
-    // Mount all protected routes under /api
-    app.route("/api", protectedRoutes);
+    // API routes (no auth required for now)
+    app.route("/api/clients", clientRoutes(clientRepo));
+    app.route("/api/messages", messageRoutes(messageRepo));
+    app.route("/api/tasks", taskRoutes(taskRepo));
 
     return app;
 }
