@@ -45,4 +45,26 @@ export class ClientRepository extends BaseRepository<ClientRow, Client> {
         
         return row ? this.mapToEntity(row) : null;
     }
+
+    async deleteWithRelated(id: number): Promise<boolean> {
+        try {
+            await this.db.run('BEGIN TRANSACTION');
+            
+            // Delete related records in correct order
+            await this.db.run('DELETE FROM task_dependencies WHERE dependent_task_id IN (SELECT id FROM tasks WHERE client_id = ?) OR required_task_id IN (SELECT id FROM tasks WHERE client_id = ?)', [id, id]);
+            await this.db.run('DELETE FROM messages WHERE client_id = ?', [id]);
+            await this.db.run('DELETE FROM events WHERE client_id = ?', [id]);
+            await this.db.run('DELETE FROM tasks WHERE client_id = ?', [id]);
+            await this.db.run('UPDATE documents SET client_id = NULL WHERE client_id = ?', [id]);
+            
+            // Finally delete the client
+            const deleted = await this.delete(id);
+            
+            await this.db.run('COMMIT');
+            return deleted;
+        } catch (error) {
+            await this.db.run('ROLLBACK');
+            throw error;
+        }
+    }
 }

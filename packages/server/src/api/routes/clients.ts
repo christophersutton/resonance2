@@ -44,5 +44,73 @@ export function clientRoutes(clientRepo: ClientRepository) {
         }
     });
 
+    // PUT /api/clients/:id - Update a client
+    app.put("/:id", async (c) => {
+        try {
+            const id = Number(c.req.param("id"));
+            const body = await c.req.json();
+            
+            // Check if client exists
+            const existingClient = await clientRepo.findById(id);
+            if (!existingClient) {
+                return c.json({ error: "Client not found" }, 404);
+            }
+
+            // Basic validation - only validate fields that are present
+            const requiredFields = ["organizationName", "firstName", "lastName", "email", "services"];
+            const providedFields = Object.keys(body);
+            const invalidFields = providedFields.filter(field => 
+                requiredFields.includes(field) && !body[field]
+            );
+            
+            if (invalidFields.length > 0) {
+                return c.json({
+                    error: "Invalid fields provided",
+                    invalidFields
+                }, 400);
+            }
+
+            const updatedClient = await clientRepo.update(id, body);
+            if (!updatedClient) {
+                return c.json({ error: "Failed to update client" }, 500);
+            }
+
+            return c.json(updatedClient);
+        } catch (error) {
+            if (process.env.NODE_ENV !== 'test') {
+                console.error("Error updating client:", error);
+            }
+            return c.json({ error: "Failed to update client" }, 500);
+        }
+    });
+
+    // DELETE /api/clients/:id - Delete a client
+    app.delete("/:id", async (c) => {
+        try {
+            const id = Number(c.req.param("id"));
+            
+            // Check if client exists
+            const existingClient = await clientRepo.findById(id);
+            if (!existingClient) {
+                return c.json({ error: "Client not found" }, 404);
+            }
+
+            try {
+                await clientRepo.deleteWithRelated(id);
+                return new Response(null, { status: 204 });
+            } catch (error) {
+                return new Response(JSON.stringify({ error: 'Failed to delete client' }), { 
+                    status: 500,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+        } catch (error) {
+            if (process.env.NODE_ENV !== 'test') {
+                console.error("Error deleting client:", error);
+            }
+            return c.json({ error: "Failed to delete client" }, 500);
+        }
+    });
+
     return app;
 }
