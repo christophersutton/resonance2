@@ -6,6 +6,14 @@ import { createTestContext, cleanupTestContext } from "../../db/__tests__/test-u
 import type { TestContext } from "../../db/__tests__/test-utils";
 import type { Task } from "../../../../shared/src/types/entities";
 
+interface Event {
+    id: number;
+    task_id: number;
+    type: string;
+    data: string;
+    created_at: string;
+}
+
 describe("Task Routes", () => {
     let context: TestContext;
     let app: Hono;
@@ -74,20 +82,20 @@ describe("Task Routes", () => {
             const task = await taskRepo.create(testTaskData);
             
             // Create an event for the task
-            const result = await context.db.query(`
+            const result = (await context.db.query(`
                 INSERT INTO events (task_id, event_type, details) 
                 VALUES (?, ?, ?)
                 RETURNING id
-            `).get(task.id, "STATUS_CHANGE", JSON.stringify({ from: "open", to: "in_progress" }));
+            `).get(task.id, "STATUS_CHANGE", JSON.stringify({ from: "open", to: "in_progress" }))) as Event;
 
             // Verify event was created
             expect(result).toBeDefined();
             expect(result.id).toBeDefined();
 
             // Verify event exists in database
-            const event = await context.db.query(`
+            const event = (await context.db.query(`
                 SELECT * FROM events WHERE id = ?
-            `).get(result.id);
+            `).get(result.id)) as Event;
             expect(event).toBeDefined();
             expect(Number(event.task_id)).toBe(task.id);
 

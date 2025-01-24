@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import type { Client } from "@/types/client";
+import type { Client } from "../types/client"
 
 type ClientContextType = {
   selectedClient: Client | null;
