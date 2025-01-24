@@ -93,39 +93,48 @@ export async function setupDatabase(options: DatabaseOptions = {}): Promise<Data
 
     if (!quiet) console.log("Setting up database...");
 
-    // Open database connection
-    const db = new Database(dbPath, { readonly, create });
-    
-    if (strict) db.run("PRAGMA strict = ON");
-    if (safeIntegers) db.run("PRAGMA trusted_schema = 0");
-    
-    configureDatabaseSettings(db);
-
-    // Only drop and recreate tables if clean is true
-    if (clean) {
-        if (!quiet) console.log("Cleaning database...");
-        // Disable foreign keys while dropping tables
-        setForeignKeyConstraints(db, false, quiet);
+    try {
+        // Open database connection with proper initialization
+        const db = new Database(dbPath, { create: true });
         
-        // Drop existing tables in correct order
-        for (const table of DROP_TABLE_ORDER) {
-            db.run(`DROP TABLE IF EXISTS ${table}`);
+        if (strict) db.run("PRAGMA strict = ON");
+        if (safeIntegers) db.run("PRAGMA trusted_schema = 0");
+        
+        configureDatabaseSettings(db);
+
+        // Always check if tables exist, create if they don't
+        const tablesExist = db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='clients'").get();
+        
+        if (!tablesExist || clean) {
+            if (!quiet) console.log(clean ? "Cleaning database..." : "Initializing database schema...");
+            // Disable foreign keys while dropping/creating tables
+            setForeignKeyConstraints(db, false, quiet);
+            
+            if (clean) {
+                // Drop existing tables in correct order
+                for (const table of DROP_TABLE_ORDER) {
+                    db.run(`DROP TABLE IF EXISTS ${table}`);
+                }
+            }
+            
+            // Re-enable foreign keys for table creation
+            setForeignKeyConstraints(db, true, quiet);
+            
+            // Create tables
+            const schema = readFileSync(path.join(__dirname, "schema.sql"), "utf8");
+            db.run(schema);
+            
+            if (!quiet) console.log("Database schema created");
         }
-        
-        // Re-enable foreign keys for table creation
-        setForeignKeyConstraints(db, true, quiet);
-        
-        // Create tables
-        const schema = readFileSync(path.join(__dirname, "schema.sql"), "utf8");
-        db.run(schema);
-        
-        if (!quiet) console.log("Database schema created");
-    }
 
-    // Verify schema is correct
-    await verifySchema(db, quiet);
-    
-    return db;
+        // Verify schema is correct
+        await verifySchema(db, quiet);
+        
+        return db;
+    } catch (error) {
+        console.error("Failed to setup database:", error);
+        throw error;
+    }
 }
 
 // Allow running directly

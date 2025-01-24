@@ -41,7 +41,7 @@ export class ClientRepository extends BaseRepository<ClientRow, Client> {
     }
 
     async findByEmail(email: string): Promise<Client | null> {
-        const row = this.db.query('SELECT * FROM clients WHERE email = ?')
+        const row = this.query('SELECT * FROM clients WHERE email = ?')
             .as(ClientRow)
             .get(email) as ClientRow | null;
         

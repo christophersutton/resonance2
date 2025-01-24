@@ -4,7 +4,7 @@ import { Database } from "bun:sqlite";
 import { ClientRepository,  TaskRepository, MessageRepository } from "../db/repositories/";
 import { config } from '../config';
 import { clientRoutes, taskRoutes, messageRoutes } from "./routes";
-import emailWebhook from './webhooks/email';
+import { webhookRoutes } from './routes/webhooks';
 
 export function createApi(db: Database) {
     const app = new Hono();
@@ -26,7 +26,7 @@ export function createApi(db: Database) {
     app.route('/api/messages', messageRoutes(messageRepo));
     
     // Mount webhook routes
-    app.route('/api/webhooks', emailWebhook(db));
+    app.route('/api/webhooks', webhookRoutes({ clientRepo, messageRepo, taskRepo }));
     
     return app;
 }
