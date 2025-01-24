@@ -4,6 +4,7 @@ import { useToast } from "../components/ui/use-toast";
 import type { ClientFormData } from "../types/client";
 import { Button } from "../components/ui/button";
 import { Trash2 } from "lucide-react";
+import { config } from '../config/env';
 
 const Settings = () => {
   const { selectedClient, refreshClients } = useClient();
@@ -11,7 +12,7 @@ const Settings = () => {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`http://localhost:3000/api/clients/${selectedClient?.id}`, {
+      const response = await fetch(`${config.apiUrl}/clients/${selectedClient?.id}`, {
         method: 'DELETE',
       });
 
@@ -37,7 +38,7 @@ const Settings = () => {
 
   const handleSubmit = async (data: ClientFormData) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/clients/${selectedClient?.id}`, {
+      const response = await fetch(`${config.apiUrl}/clients/${selectedClient?.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

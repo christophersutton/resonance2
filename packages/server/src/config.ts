@@ -33,7 +33,7 @@ export function loadConfig(): Config {
                 domain: getRequiredEnvVar('MAILGUN_DOMAIN'),
                 webhookSigningKey: getRequiredEnvVar('MAILGUN_WEBHOOK_SIGNING_KEY'),
             },
-            appUrl: getRequiredEnvVar('APP_URL'),
+            appUrl: getRequiredEnvVar('CORS_ORIGIN'),
             openai: {
                 apiKey: process.env.OPENAI_API_KEY || '',
                 model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',

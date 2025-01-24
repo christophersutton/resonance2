@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { Client } from "../types/client"
+import { config } from '../config/env';
 
 type ClientContextType = {
   selectedClient: Client | null;
@@ -12,8 +13,6 @@ type ClientContextType = {
 
 const ClientContext = createContext<ClientContextType | undefined>(undefined);
 
-const API_BASE_URL = 'http://localhost:3000/api';
-
 export function ClientProvider({ children }: { children: ReactNode }) {
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [clients, setClients] = useState<Client[]>([]);
@@ -25,7 +24,7 @@ export function ClientProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
       setError(null);
       console.log('Fetching clients...'); // Debug log
-      const response = await fetch(`${API_BASE_URL}/clients`);
+      const response = await fetch(`${config.apiUrl}/clients`);
       
       if (!response.ok) {
         throw new Error(`Failed to fetch clients: ${response.statusText}`);

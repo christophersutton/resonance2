@@ -3,8 +3,10 @@ import { Badge } from "../components/ui/badge";
 import { useState, useEffect } from "react";
 import { TaskDetail } from "../components/TaskDetail";
 import { useClient } from "../contexts/ClientContext";
-import type { Task, TaskStatus } from "@resonance/shared/src/types/enums";
+import type {  TaskStatus } from "../../../shared/src/types/enums";
+import type { Task, } from "../../../shared/src/types/entities";
 import { useToast } from "../components/ui/use-toast";
+import { config } from '../config/env';
 
 const Tasks = () => {
   const { selectedClient } = useClient();
@@ -19,7 +21,7 @@ const Tasks = () => {
       
       try {
         setIsLoading(true);
-        const response = await fetch(`http://localhost:3000/api/tasks?clientId=${selectedClient.id}`);
+        const response = await fetch(`${config.apiUrl}/tasks?clientId=${selectedClient.id}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch tasks');
