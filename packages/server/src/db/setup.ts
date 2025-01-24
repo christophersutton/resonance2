@@ -72,7 +72,7 @@ async function verifySchema(db: Database, quiet?: boolean): Promise<void> {
     
     const tableNames = new Set(tables.map(([name]) => name));
     if (!quiet) {
-        console.log("Created tables:", Array.from(tableNames).join(", "));
+        console.log("Available tables:", Array.from(tableNames).join(", "));
     }
 }
 
@@ -91,7 +91,7 @@ export async function setupDatabase(options: DatabaseOptions = {}): Promise<Data
         seed = false
     } = options;
 
-    if (!quiet) console.log("Setting up database...");
+    if (!quiet) console.log("Connecting to database...");
 
     try {
         // Open database connection with proper initialization
@@ -102,11 +102,11 @@ export async function setupDatabase(options: DatabaseOptions = {}): Promise<Data
         
         configureDatabaseSettings(db);
 
-        // Always check if tables exist, create if they don't
+        // Check if tables exist
         const tablesExist = db.query("SELECT name FROM sqlite_master WHERE type='table' AND name='clients'").get();
         
         if (!tablesExist || clean) {
-            if (!quiet) console.log(clean ? "Cleaning database..." : "Initializing database schema...");
+            if (!quiet) console.log(clean ? "Cleaning database..." : "Initializing new database...");
             // Disable foreign keys while dropping/creating tables
             setForeignKeyConstraints(db, false, quiet);
             
@@ -124,11 +124,13 @@ export async function setupDatabase(options: DatabaseOptions = {}): Promise<Data
             const schema = readFileSync(path.join(__dirname, "schema.sql"), "utf8");
             db.run(schema);
             
-            if (!quiet) console.log("Database schema created");
+            if (!quiet) console.log("Database schema created successfully");
+            
+            // Only verify schema when we create new tables
+            await verifySchema(db, quiet);
+        } else if (!quiet) {
+            console.log("Using existing database");
         }
-
-        // Verify schema is correct
-        await verifySchema(db, quiet);
         
         return db;
     } catch (error) {

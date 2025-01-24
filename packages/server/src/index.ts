@@ -14,7 +14,8 @@ console.log("Using database path:", config.dbPath);
 const db = await setupDatabase({ 
     dbPath: config.dbPath,
     clean,
-    seed
+    seed,
+    quiet: !clean && !seed // Only show messages if we're cleaning or seeding
 });
 
 if (seed) {

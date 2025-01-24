@@ -1,0 +1,12 @@
+.git
+.gitignore
+.env
+node_modules
+**/node_modules
+.turbo
+**/.turbo
+dist
+**/dist
+.DS_Store
+**/.DS_Store
+*.log
