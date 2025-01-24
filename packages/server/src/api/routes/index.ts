@@ -14,6 +14,7 @@ import { ClientRepository } from "../../db/repositories/client";
 import { MessageRepository } from "../../db/repositories/message";
 import { TaskRepository } from "../../db/repositories/task";
 import { UserRepository } from "../../db/repositories/user";
+import { webhookRoutes } from "./webhooks";
 
 export function setupRoutes(db: Database) {
     const app = new Hono();
@@ -31,6 +32,9 @@ export function setupRoutes(db: Database) {
     app.route("/api/clients", clientRoutes(clientRepo));
     app.route("/api/messages", messageRoutes(messageRepo));
     app.route("/api/tasks", taskRoutes(taskRepo));
+
+    // Webhook routes
+    app.route("/api/webhooks", webhookRoutes({ clientRepo, messageRepo, taskRepo }));
 
     return app;
 }

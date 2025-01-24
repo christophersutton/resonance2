@@ -6,8 +6,13 @@ interface Config {
         mailgun: {
             apiKey: string;
             domain: string;
+            webhookSigningKey: string;
         };
         appUrl: string;
+        openai: {
+            apiKey: string;
+            model: string;
+        };
     };
 }
 
@@ -26,8 +31,13 @@ export function loadConfig(): Config {
             mailgun: {
                 apiKey: getRequiredEnvVar('MAILGUN_API_KEY'),
                 domain: getRequiredEnvVar('MAILGUN_DOMAIN'),
+                webhookSigningKey: getRequiredEnvVar('MAILGUN_WEBHOOK_SIGNING_KEY'),
             },
-            appUrl: getRequiredEnvVar('APP_URL')
+            appUrl: getRequiredEnvVar('APP_URL'),
+            openai: {
+                apiKey: process.env.OPENAI_API_KEY || '',
+                model: process.env.OPENAI_MODEL || 'gpt-4-turbo-preview',
+            }
         }
     };
 
