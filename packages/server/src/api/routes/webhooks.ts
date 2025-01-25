@@ -4,6 +4,7 @@ import { MessageRepository } from '../../db/repositories/message';
 import { TaskRepository } from '../../db/repositories/task';
 import { ClientRepository } from '../../db/repositories/client';
 import { MessageClassification } from '../../services/openai.service';
+import { Task } from '../../../../shared/src/types/entities';
 
 export const webhookRoutes = ({ messageRepo, taskRepo, clientRepo }: { 
     messageRepo: MessageRepository;
@@ -47,11 +48,11 @@ export const webhookRoutes = ({ messageRepo, taskRepo, clientRepo }: {
 
         // Process email content
         const emailData = {
-          sender: body['sender'].toString(),
-          recipient: body['recipient'].toString(),
-          subject: body['subject'].toString(),
+          sender: body['sender']?.toString(),
+          recipient: body['recipient']?.toString(),
+          subject: body['subject']?.toString(),
           body: {
-            plain: body['body-plain'].toString(),
+            plain: body['body-plain']?.toString(),
             html: body['body-html']?.toString(),
           },
        
@@ -87,7 +88,7 @@ export const webhookRoutes = ({ messageRepo, taskRepo, clientRepo }: {
           status: 'open',
         };
         console.log('🔍 Task data:', taskData);
-        const task = await taskRepo.create(taskData);
+        const task = await taskRepo.create(taskData as Omit<Task, "id" | "createdAt">);
         console.log('✅ Created task:', { id: task.id, title: task.title });
 
         // Link message to task

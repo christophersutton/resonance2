@@ -40,7 +40,7 @@ export class EmailService {
     cleanContent: string;
   }> {
     console.log('🧹 Cleaning email content...');
-    const cleanContent = this.cleanEmailContent(emailData.body.plain);
+    const cleanContent = this.cleanEmailContent(emailData.body?.plain || '');
     console.log('✅ Cleaned content length:', cleanContent.length);
 
     console.log('🤖 Requesting AI classification...');
@@ -54,7 +54,7 @@ export class EmailService {
   }
 
   private cleanEmailContent(content: string): string {
-    console.log('🧹 Starting email content cleaning');
+    console.log('🧹 Starting email content cleaning:', content);
     // TODO: Implement more sophisticated email cleaning
     // Remove email signatures, reply chains, etc.
     const cleaned = content
